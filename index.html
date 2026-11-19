@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>הפועל יפו צעירים · סטטיסטיקות עונה</title>
+<style>
+:root{--bg:#eef1f6;--card:#fff;--ink:#0c1a30;--mut:#66758c;--line:#dfe5ee;--chip:#e6ebf3;--win:#15803d;--loss:#dc2626;--us:#ffc233;--them:#4d9bff;--h1:#0a1730;--h2:#10264d;--usT:color-mix(in srgb,var(--us) 58%,#000);--themT:color-mix(in srgb,var(--them) 70%,#000);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#070e1c;--card:#0f1b32;--ink:#edf2fb;--mut:#8b9bb4;--line:#1c2b48;--chip:#18284a;--win:#4ade80;--loss:#f87171;--usT:var(--us);--themT:var(--them)}}
+:root[data-theme="dark"]{--bg:#070e1c;--card:#0f1b32;--ink:#edf2fb;--mut:#8b9bb4;--line:#1c2b48;--chip:#18284a;--win:#4ade80;--loss:#f87171;--usT:var(--us);--themT:var(--them)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Heebo","Assistant",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;max-width:720px;margin-inline:auto;font-size:15px;padding-bottom:92px}
+.hero{background:linear-gradient(180deg,var(--h1),var(--h2));color:#fff;padding:14px 14px 14px;border-radius:0 0 22px 22px;position:relative}
+.top{display:flex;justify-content:space-between;align-items:center;min-height:30px;font-size:12px;color:#b4c3dc}
+.hb{border:0;background:#ffffff1c;color:#fff;border-radius:16px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}
+.pals{display:flex;gap:8px;justify-content:center;margin:10px 0 2px;flex-wrap:wrap}
+.pal{border:2px solid transparent;background:#ffffff14;color:#fff;border-radius:14px;padding:5px 10px;font:inherit;font-size:12px;cursor:pointer;display:flex;gap:5px;align-items:center}
+.pal[aria-pressed="true"]{border-color:#fff}.pal i{width:12px;height:12px;border-radius:50%;display:inline-block}
+h1{margin:10px 0 12px;font-size:22px;text-align:center}
+.rec{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.rec div{background:#ffffff14;border-radius:12px;padding:8px 4px}.rec b{display:block;font-size:24px;font-weight:900}.rec span{font-size:11px;color:#b4c3dc}
+.score{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin-top:10px}
+.tm{text-align:center;font-weight:700;font-size:14px;line-height:1.25}
+.crest{width:48px;height:48px;border-radius:50%;margin:0 auto 6px;display:grid;place-items:center;font-weight:800;font-size:19px;color:#07101f}
+.big{font-size:44px;font-weight:900;direction:ltr;white-space:nowrap;text-align:center}
+.big i{font-style:normal;opacity:.4;margin:0 4px}.big .w{color:#fff}.big .l{color:#9fb2d1}
+.fin{display:inline-block;background:#ffffff1c;border-radius:20px;padding:2px 12px;font-size:12px;color:#d6e4ff}
+.qs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px;direction:ltr}
+.qb{background:#ffffff12;border-radius:10px;padding:6px 2px;text-align:center;font-size:11px;color:#b4c3dc;direction:rtl}.qb div{font-size:15px;direction:ltr;margin-top:2px}
+.chips{display:flex;gap:6px;padding:12px 14px 2px;overflow-x:auto}
+.chip{border:0;background:var(--chip);color:var(--ink);padding:6px 14px;border-radius:20px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;margin:10px 14px;padding:14px;overflow:hidden}
+h2{margin:0 0 10px;font-size:16px}
+.sum{font-size:16px;line-height:1.5;font-weight:600}
+.mvp{display:flex;align-items:center;gap:12px}.mvp .n{font-size:40px;font-weight:900;line-height:1}.mvp small{color:var(--mut);display:block;font-size:12px}
+.cmp{display:grid;grid-template-columns:40px 1fr 40px;gap:8px;align-items:center;margin:12px 0}
+.cmp .l{text-align:center;font-weight:800}.cmp .c{font-size:12px;color:var(--mut);text-align:center;margin-bottom:3px}
+.bar{display:flex;height:8px;border-radius:6px;overflow:hidden;background:var(--line);gap:2px}.bar span{display:block;height:100%}
+.pr{border-bottom:1px solid var(--line)}.pr:last-child{border:0}
+.pr summary{list-style:none;display:grid;grid-template-columns:30px 1fr auto;gap:8px;align-items:center;padding:10px 0;cursor:pointer}.pr summary::-webkit-details-marker{display:none}
+.no{font-weight:800;color:var(--mut);text-align:center}.nm{font-weight:700}.sub{font-size:12px;color:var(--mut);margin-top:2px;font-weight:400}.pt{font-size:24px;font-weight:900}
+.dt{padding:0 38px 10px;font-size:13px;color:var(--mut);line-height:1.8}
+.dots{display:inline-flex;gap:3px;vertical-align:middle}.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}.dots i.on{background:#ef4444}
+.rd{font-size:14px;text-align:center;margin:2px 0 6px;min-height:22px}
+.crt{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ev{display:grid;grid-template-columns:56px 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.tag{font-weight:900;font-size:12px;color:#fff;border-radius:8px;text-align:center;padding:3px 0}.g3{background:#16a34a}.g2{background:#6366f1}.g1{background:#a16207}
+.ev .r{direction:ltr;font-weight:800;color:var(--mut);font-size:13px}
+.gm{display:grid;grid-template-columns:62px 1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}.gm:last-child{border:0}
+.bdg{font-weight:900;font-size:13px;color:#fff;border-radius:10px;text-align:center;padding:8px 0}.W{background:var(--win)}.L{background:var(--loss)}
+.gm .t{font-weight:700}.gm .s{font-size:12px;color:var(--mut);margin-top:2px}.gm .go{color:var(--usT);font-size:22px}
+.sc{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px;min-width:440px}
+th{color:var(--mut);font-weight:600;font-size:12px;padding:6px 3px;border-bottom:1px solid var(--line);text-align:center;cursor:pointer;white-space:nowrap}
+th[aria-sort]{color:var(--ink)}td{padding:9px 3px;text-align:center;border-bottom:1px solid var(--line)}td.p,th.p{text-align:right}.bg{font-weight:900;font-size:15px}
+.empty{color:var(--mut);text-align:center;padding:22px 8px}
+details.how{margin:12px 18px;color:var(--mut);font-size:12px;line-height:1.7}
+.nav{position:fixed;bottom:0;left:0;right:0;max-width:720px;margin-inline:auto;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+.nav button{flex:1;border:0;background:none;color:var(--mut);font:inherit;font-size:12px;font-weight:600;padding:6px 0;cursor:pointer;display:grid;gap:2px;justify-items:center}
+.nav button span{font-size:20px}.nav button[aria-selected="true"]{color:var(--ink)}
+svg text{font-family:inherit}
+</style>
+</head>
+<body>
+<header class="hero" id="hero"></header>
+<div class="chips" id="chips"></div>
+<main id="view"></main>
+<details class="how" id="how"><summary>איך זה מחושב</summary>הנתונים נקראים מטופס סיום המשחק. סוג הסל (1, 2 או 3 נקודות) נגזר מהפרש הנקודות בין קליעות עוקבות. החטאות לא מתועדות בטופס, ולכן אין אחוזי קליעה מהשדה. אין שעון בטופס: סוף כל רבע מדויק, והזמן בתוך הרבע משוער. מפת המגרש מראה סוג קליעה ולא מיקום. "משחקים" לשחקן = משחקים שבהם נרשם כמי שעלה לפרקט.</details>
+<nav class="nav" id="nav"></nav>
+<script>
+var US='הפועל יפו צעירים';
+var PAL=[['זהב וכחול','#ffc233','#4d9bff','#0a1730','#10264d'],['כתום יפו','#ff7a1a','#38bdf8','#1c1108','#3b1d09'],['ירוק מגרש','#34d399','#f472b6','#041a14','#0b3b2e'],['אדום וסגול','#f43f5e','#a78bfa','#16081a','#2d1038'],['טורקיז ופחם','#22d3ee','#94a3b8','#0b1116','#1a2733']];
+var G=[{d:'11/11/2026',meta:'ליגה ב׳ · תל אביב · 11/11/2026 · 21:00',t:[
+{n:'הפועל יפו צעירים',sh:'יפו',end:[20,34,48,62],
+ m:'2:23,4:13,6:7,8:23,11:7,13:23,15:23,17:13,18:18,19:18,20:3,22:13,24:41,25:13,28:4,30:4,32:23,34:23,35:4,37:13,38:13,39:15,40:15,41:13,42:13,44:4,45:3,46:3,48:4,51:69,53:69,56:18,57:18,58:18,60:3,62:18',
+ pl:[[3,'ג. לבהר',1,[]],[4,'ר. ארנוביץ',1,['P','P2','P','P']],[6,'ד. ששון',0,[]],[7,'י. שטרית',1,['P']],[8,'א. מנור',0,[]],[10,'ע. אשכר',1,[]],[13,'י. הדס',1,['P2','P','P']],[14,'א. בן יאיר',0,[]],[15,'ד. בניש',1,['P','P1','P','P']],[18,'ד. מרינה',1,['P','P2','P2']],[22,'א. ארנוביץ',1,['P1']],[23,'א. שטרוזברג',1,['P2']],[24,'י. מוראדי',0,[]],[41,'י. סולטן',1,['P2']],[69,'ט. סולטן',1,['P','P','P']]]},
+{n:'מכבי שהם/ת״א ניצ',sh:'ניצ',end:[18,42,64,72],
+ m:'2:7,4:5,6:7,9:21,11:7,14:11,16:9,17:5,18:5,20:11,22:22,23:7,24:7,27:11,29:7,32:9,34:5,37:23,39:5,42:21,45:9,48:22,51:7,52:5,53:5,55:5,57:5,59:22,61:10,63:6,64:9,66:11,67:5,68:5,69:22,70:22,71:7,72:7',
+ pl:[[5,'ש. מי-טל',1,['P2','P2','P']],[6,'א. גולדברג',1,['P','P2']],[7,'ב. כהן',1,['P','P','P','P']],[9,'נ. לוי',1,['P1','P2','P']],[10,'א. הנדלסמן',1,['P2','FL','P']],[11,'א. דהן',1,['P2','P','P','P','P2']],[12,'ס. לוי',0,[]],[21,'י. קמינסקי',1,['P','P']],[22,'מ. לוי',1,['P','P']],[23,'א. וולטר',1,[]],[24,'ד. גולן',1,['P']]]}]},
+{d:'18/11/2026',meta:'ליגה ב׳ · תל אביב · 18/11/2026 · 21:00',t:[
+{n:'הפועל אזור חממי',sh:'אזור',end:[12,23,40,61],
+ m:'2:7,4:6,5:22,6:7,7:7,8:6,9:0,10:0,11:15,12:15,15:3,16:15,18:6,19:22,20:22,22:7,23:7,24:22,26:7,27:13,29:7,32:0,34:7,35:0,36:6,37:3,38:3,40:0,43:0,45:6,47:15,50:30,51:14,52:14,55:30,57:15,58:30,59:22,61:14',
+ pl:[[0,'ע. וינקרץ',1,['P','P','P']],[3,'א. מאור',1,['P1']],[5,'נ. אטיאס',1,[]],[6,'פ. איתי',1,['P']],[7,'י. מושקוב',1,[]],[9,'ע. עגיב',0,[]],[11,'ר. קורן',1,[]],[13,'א. לדרמן',1,['P2','P']],[14,'ט. שמואלי',1,['P2','P','P','P2']],[15,'א. פרידמן',1,['P2','FL','P']],[19,'פ. לוי',0,[]],[21,'ע. זבולון',0,[]],[22,'ש. צסיס',1,['P1']],[30,'מ. בויניס',1,['P','P','P']]]},
+{n:'הפועל יפו צעירים',sh:'יפו',end:[21,30,42,53],
+ m:'2:13,5:15,6:15,7:23,8:15,9:15,11:23,13:7,15:23,18:15,21:15,22:18,24:22,26:8,28:23,30:15,32:23,34:15,37:7,40:69,42:23,44:7,46:7,48:23,50:15,51:15,53:7',
+ pl:[[3,'ג. לבהר',1,['P','FL']],[4,'ר. ארנוביץ',1,[]],[6,'ד. ששון',0,[]],[7,'י. שטרית',1,['P2','P2','P2']],[8,'א. מנור',1,['P2']],[10,'ע. אשכר',0,[]],[13,'י. הדס',1,['P1','P2','P2','P','P2']],[14,'א. בן יאיר',1,['P2']],[15,'ד. בניש',1,['P2','P2','P','P']],[18,'ד. מרינה',1,['P','P']],[22,'א. ארנוביץ',1,['P2','P2']],[23,'א. שטרוזברג',1,['P2']],[24,'י. מוראדי',0,[]],[41,'י. סולטן',1,['P2','P2','P2']],[69,'ט. סולטן',1,['P2','P2','P2','P2']]]}]}];
+G.forEach(function(g){g.t.forEach(function(t){var pv=0;t.us=t.n==US;t.col=t.us?'var(--usT)':'var(--themT)';t.hex=t.us?'var(--us)':'var(--them)';
+ t.ev=t.m.split(',').map(function(x){var a=x.split(':').map(Number),s=a[0],q=t.end.findIndex(function(e){return s<=e})+1,r={s:s,p:a[1],pts:s-pv,q:q};pv=s;return r});
+ t.pl=t.pl.map(function(a){var o={n:a[0],nm:a[1],gp:a[2],f:a[3]};o.ev=t.ev.filter(function(e){return e.p==o.n});return o});
+ t.pts=t.end[3];t.t3=t.ev.filter(function(e){return e.pts==3}).length;t.ft=t.ev.filter(function(e){return e.pts==1}).length;t.fl=t.pl.reduce(function(a,p){return a+p.f.length},0)})});
+var V={m:'season',tab:'gm',gt:'ov',fq:0,gi:0,sk:'pts',pal:0,pop:0},A,B,W,Lz,cur;
+try{var sv=+localStorage.getItem('pal');if(sv>=0&&sv<PAL.length)V.pal=sv}catch(e){}
+function applyPal(){var p=PAL[V.pal],r=document.documentElement.style;r.setProperty('--us',p[1]);r.setProperty('--them',p[2]);r.setProperty('--h1',p[3]);r.setProperty('--h2',p[4])}
+function st(ev,q){var e=ev.filter(function(x){return !q||x.q==q}),f=function(v){return e.filter(function(x){return x.pts==v}).length};return{pts:e.reduce(function(a,x){return a+x.pts},0),t3:f(3),t2:f(2),ft:f(1)}}
+function qp(t,q){return t.end[q-1]-(q>1?t.end[q-2]:0)}
+var QN=['כל המשחק','רבע 1','רבע 2','רבע 3','רבע 4'];
+function avg(a,f){return a.length?a.reduce(function(s,x){return s+f(x)},0)/a.length:0}
+function r1(v){return Math.round(v*10)/10}
+function rows(){return G.map(function(g,i){var me=g.t.filter(function(t){return t.us})[0],op=g.t.filter(function(t){return !t.us})[0];return{i:i,g:g,me:me,op:op,w:me.pts>op.pts}}).filter(function(r){return r.me})}
+/* ---------- hero ---------- */
+function palRow(){return V.pop?'<div class="pals">'+PAL.map(function(p,i){return '<button class="pal" data-p="'+i+'" aria-pressed="'+(V.pal==i)+'"><i style="background:'+p[1]+'"></i><i style="background:'+p[2]+'"></i>'+p[0]+'</button>'}).join('')+'</div>':''}
+function heroSeason(){var R=rows(),w=R.filter(function(r){return r.w}).length;
+ return '<div class="top"><span>ליגה ב׳ · עונת 2026/27</span><button class="hb" data-pop="1">🎨 צבעים</button></div>'+palRow()+'<h1>'+US+'</h1><div class="rec"><div><b>'+R.length+'</b><span>משחקים</span></div><div><b>'+w+'–'+(R.length-w)+'</b><span>ניצחונות–הפסדים</span></div><div><b>'+(R.length?r1(avg(R,function(r){return r.me.pts-r.op.pts})):0)+'</b><span>הפרש ממוצע</span></div></div>'}
+function heroGame(){var g=G[V.gi];
+ return '<div class="top"><button class="hb" data-back="1">→ חזרה לעונה</button><span>'+g.meta+'</span><button class="hb" data-pop="1">🎨</button></div>'+palRow()+'<div class="score"><div class="tm"><div class="crest" style="background:'+A.hex+'">'+A.sh.charAt(0)+'</div>'+A.n+'</div><div><div class="big"><b class="'+(B==W?'w':'l')+'">'+B.end[3]+'</b><i>:</i><b class="'+(A==W?'w':'l')+'">'+A.end[3]+'</b></div><div style="text-align:center"><span class="fin">הסתיים · '+W.sh+' ניצחה</span></div></div><div class="tm"><div class="crest" style="background:'+B.hex+'">'+B.sh.charAt(0)+'</div>'+B.n+'</div></div><div class="qs">'+[1,2,3,4].map(function(q){var a=qp(A,q),b=qp(B,q);return '<div class="qb">רבע '+q+'<div><b style="color:'+B.hex+';'+(b>a?'':'opacity:.55')+'">'+b+'</b> : <b style="color:'+A.hex+';'+(a>b?'':'opacity:.55')+'">'+a+'</b></div></div>'}).join('')+'</div>'}
+/* ---------- season views ---------- */
+function cmp2(lbl,a,b,lo){var s=a+b||1,w=a==b?0:((a>b)!=(lo==1)?1:2),k=function(i){return w==i?'font-weight:900;font-size:18px;color:'+(i==1?'var(--usT)':'var(--themT)'):'color:var(--mut)'};return '<div class="cmp"><div class="l" style="'+k(1)+'">'+r1(a)+'</div><div><div class="c">'+lbl+'</div><div class="bar"><span style="width:'+(a/s*100)+'%;background:var(--us)"></span><span style="width:'+(b/s*100)+'%;background:var(--them)"></span></div></div><div class="l" style="'+k(2)+'">'+r1(b)+'</div></div>'}
+function sGames(R){
+ var h='<div class="card"><h2>משחקים</h2>'+R.map(function(r){return '<div class="gm" data-g="'+r.i+'"><div class="bdg '+(r.w?'W':'L')+'">'+(r.w?'ניצחון':'הפסד')+'</div><div><div class="t">'+r.me.sh+' '+r.me.pts+' · '+r.op.sh+' '+r.op.pts+'</div><div class="s">'+r.g.d+' · מול '+r.op.n+'</div></div><div class="go">‹</div></div>'}).join('')+'</div>';
+ var Wd=Math.max(R.length*70,280),bars=R.map(function(r,i){var d=r.me.pts-r.op.pts,hh=Math.min(Math.abs(d),30)*2.2;return '<rect x="'+(i*70+18)+'" y="'+(d>=0?80-hh:80)+'" width="34" height="'+hh+'" rx="4" fill="'+(d>=0?'var(--win)':'var(--loss)')+'"/><text x="'+(i*70+35)+'" y="'+(d>=0?74-hh:96+hh)+'" font-size="11" text-anchor="middle" fill="currentColor">'+(d>0?'+':'')+d+'</text><text x="'+(i*70+35)+'" y="170" font-size="10" text-anchor="middle" fill="var(--mut)">'+r.g.d.slice(0,5)+'</text>'}).join('');
+ return h+'<div class="card"><h2>הפרש בכל משחק</h2><div class="sc"><svg viewBox="0 0 '+Wd+' 176" width="'+Wd+'" style="direction:ltr;max-width:none"><line x1="0" x2="'+Wd+'" y1="80" y2="80" stroke="var(--line)"/>'+bars+'</svg></div></div>'}
+function sPlayers(R){
+ var M={};R.forEach(function(r){r.me.pl.forEach(function(p){var o=M[p.nm]||(M[p.nm]={nm:p.nm,gp:0,pts:0,t3:0,ft:0,f:0});o.gp+=p.gp;o.pts+=p.ev.reduce(function(a,e){return a+e.pts},0);o.t3+=p.ev.filter(function(e){return e.pts==3}).length;o.ft+=p.ev.filter(function(e){return e.pts==1}).length;o.f+=p.f.length})});
+ var sk=V.sk,L=Object.keys(M).map(function(k){var o=M[k];o.avg=o.gp?o.pts/o.gp:0;return o}).filter(function(o){return o.gp}).sort(function(a,b){return b[sk]-a[sk]||b.pts-a.pts});
+ var C=[['gp','מש׳'],['pts','נק׳'],['avg','ממוצע'],['t3','שלשות'],['ft','עונשין'],['f','עבירות']];
+ return '<div class="card"><h2>שחקנים · סיכומים וממוצעים</h2><div class="sc"><table><tr><th class="p" style="cursor:default">שחקן</th>'+C.map(function(c){return '<th data-s="'+c[0]+'"'+(sk==c[0]?' aria-sort="descending"':'')+'>'+c[1]+(sk==c[0]?' ▾':'')+'</th>'}).join('')+'</tr>'+L.map(function(o){return '<tr><td class="p"><b>'+o.nm+'</b></td><td>'+o.gp+'</td><td class="bg">'+o.pts+'</td><td>'+r1(o.avg)+'</td><td>'+o.t3+'</td><td>'+o.ft+'</td><td>'+o.f+'</td></tr>'}).join('')+'</table></div><div style="font-size:12px;color:var(--mut);margin-top:8px">לחצו על כותרת עמודה כדי למיין.</div></div>'}
+function sTeam(R){var f=function(k){return avg(R,function(r){return r.me[k]})},o=function(k){return avg(R,function(r){return r.op[k]})};
+ return '<div class="card"><h2>ממוצע למשחק</h2><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span style="color:var(--usT)">'+US+'</span><span style="color:var(--themT)">יריבות</span></div>'+cmp2('נקודות',f('pts'),o('pts'))+cmp2('שלשות',f('t3'),o('t3'))+cmp2('עונשין שנקלעו',f('ft'),o('ft'))+cmp2('עבירות אישיות',f('fl'),o('fl'),1)+'</div>'}
+/* ---------- game views ---------- */
+function awd(t){var n=0;t.pl.forEach(function(p){p.f.forEach(function(f){n+=f=='P1'?1:f=='P2'?2:0})});return n}
+function cmp(lbl,a,b,fa,fb,lo){var s=a+b||1,w=a==b?0:((a>b)!=(lo==1)?1:2),k=function(i){return w==i?'font-weight:900;font-size:19px;color:'+cur[i-1].col:'color:var(--mut)'};return '<div class="cmp"><div class="l" style="'+k(1)+'">'+(fa||a)+'</div><div><div class="c">'+lbl+'</div><div class="bar"><span style="width:'+(a/s*100)+'%;background:'+A.hex+'"></span><span style="width:'+(b/s*100)+'%;background:'+B.hex+'"></span></div></div><div class="l" style="'+k(2)+'">'+(fb||b)+'</div></div>'}
+function best(q){var b=null;cur.forEach(function(t){t.pl.forEach(function(p){var s=st(p.ev,q);if(!b||s.pts>b.s.pts)b={p:p,t:t,s:s}})});return b}
+function ov(){var fq=V.fq,a=st(A.ev,fq),b=st(B.ev,fq),h='<div class="card sum">';
+ if(!fq){var w=st(W.ev,0),l=st(Lz.ev,0),dq=1,dm=-99;[1,2,3,4].forEach(function(q){var d=qp(W,q)-qp(Lz,q);if(d>dm){dm=d;dq=q}});
+  h+=W.n+' ניצחה '+W.end[3]+' מול '+Lz.end[3]+(w.t3>l.t3?', בזכות '+w.t3+' שלשות מול '+l.t3:'')+'. הרבע המכריע: רבע '+dq+' ('+qp(W,dq)+' מול '+qp(Lz,dq)+').'}
+ else h+='רבע '+fq+': '+A.sh+' '+qp(A,fq)+' · '+B.sh+' '+qp(B,fq);
+ var m=best(fq);h+='</div><div class="card mvp"><div class="n" style="color:'+m.t.col+'">'+m.s.pts+'</div><div><small>'+(fq?'מוביל הרבע':'שחקן המשחק')+'</small><b>'+m.p.nm+'</b> · '+m.t.sh+'<small>'+m.s.t3+' שלשות · '+m.s.t2+' סלי 2 · '+m.s.ft+' עונשין</small></div></div><div class="card"><h2>השוואה · '+QN[fq]+'</h2>'+cmp('שלשות',a.t3,b.t3)+cmp('סלי 2',a.t2,b.t2)+cmp('עונשין שנקלעו',a.ft,b.ft);
+ if(!fq)h+=cmp('עבירות אישיות',A.fl,B.fl,0,0,1);return h+'</div>'}
+function prow(p,t,s){var dots='';for(var i=0;i<5;i++)dots+='<i class="'+(i<p.f.length?'on':'')+'"></i>';var qs=[1,2,3,4].map(function(q){return 'רבע '+q+': <b>'+st(p.ev,q).pts+'</b>'}).join(' · ');
+ return '<details class="pr"><summary><span class="no">'+p.n+'</span><div><div class="nm">'+p.nm+'</div><div class="sub">'+s.t3+' שלשות · '+s.t2+' סלי 2 · '+s.ft+' עונשין</div></div><b class="pt" style="color:'+(s.pts?t.col:'var(--mut)')+'">'+s.pts+'</b></summary><div class="dt">'+qs+'<br>עבירות: <span class="dots">'+dots+'</span> '+p.f.length+'</div></details>'}
+function gpl(){return cur.map(function(t){var r=t.pl.map(function(p){return{p:p,s:st(p.ev,V.fq)}}).sort(function(x,y){return y.s.pts-x.s.pts||x.p.n-y.p.n});return '<div class="card"><h2 style="color:'+t.col+'">'+t.n+'</h2>'+r.map(function(x){return prow(x.p,t,x.s)}).join('')+'</div>'}).join('')}
+function tAt(e,t){var qs=e.q>1?t.end[e.q-2]:0;return (e.q-1)*10+(e.s-qs)/(t.end[e.q-1]-qs)*10}
+function sAt(t,m){var v=0;t.ev.forEach(function(e){if(tAt(e,t)<=m+1e-9)v=e.s});return v}
+function rdTxt(m){return 'דקה '+Math.round(m)+' (משוער): <b style="color:'+A.col+'">'+A.sh+' '+sAt(A,m)+'</b> · <b style="color:'+B.col+'">'+B.sh+' '+sAt(B,m)+'</b>'}
+function flow(){var fq=V.fq,Wd=340,H=190,L=26,R=10,Tp=10,Bt=22,pw=Wd-L-R,ph=H-Tp-Bt,X=function(m){return L+m/40*pw},Y=function(v){return Tp+ph-v/80*ph};
+ var s='<svg id="fl" viewBox="0 0 '+Wd+' '+H+'" width="100%" style="direction:ltr;touch-action:pan-y" role="img" aria-label="מהלך המשחק">';
+ if(fq)s+='<rect x="'+X((fq-1)*10)+'" y="'+Tp+'" width="'+pw/4+'" height="'+ph+'" fill="currentColor" opacity=".08"/>';
+ [0,20,40,60,80].forEach(function(v){s+='<line x1="'+L+'" x2="'+(Wd-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(L-4)+'" y="'+(Y(v)+3)+'" font-size="9" text-anchor="end" fill="var(--mut)">'+v+'</text>'});
+ [0,1,2,3].forEach(function(i){s+='<line x1="'+X(i*10)+'" x2="'+X(i*10)+'" y1="'+Tp+'" y2="'+(Tp+ph)+'" stroke="var(--line)" stroke-dasharray="3 3"/><text x="'+X(i*10+5)+'" y="'+(H-6)+'" font-size="9" text-anchor="middle" fill="var(--mut)">רבע '+(i+1)+'</text>'});
+ cur.forEach(function(t){var pts=[[0,0]],pv=0;t.ev.forEach(function(e){var m=tAt(e,t);pts.push([m,pv]);pts.push([m,e.s]);pv=e.s});pts.push([40,pv]);
+  var d=pts.map(function(p,i){return (i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)}).join('');
+  s+='<path d="'+d+'L'+X(40)+' '+Y(0)+'L'+X(0)+' '+Y(0)+'Z" fill="'+t.hex+'" fill-opacity=".12"/><path d="'+d+'" fill="none" stroke="'+t.hex+'" stroke-width="2.2" stroke-linejoin="round"/><circle cx="'+X(40)+'" cy="'+Y(pv)+'" r="3.5" fill="'+t.hex+'"/>'});
+ s+='<line id="cx" x1="0" x2="0" y1="'+Tp+'" y2="'+(Tp+ph)+'" stroke="currentColor" visibility="hidden"/><rect id="fr" x="'+L+'" y="'+Tp+'" width="'+pw+'" height="'+ph+'" fill="transparent"/></svg>';
+ var all=[];cur.forEach(function(t){t.ev.forEach(function(e){if(!fq||e.q==fq)all.push({t:t,e:e})})});
+ all.sort(function(x,y){return x.e.q-y.e.q||(cur.indexOf(x.t)-cur.indexOf(y.t))||x.e.s-y.e.s});
+ var lst=all.map(function(r){var p=r.t.pl.filter(function(z){return z.n==r.e.p})[0];return '<div class="ev"><div class="tag g'+r.e.pts+'">'+(r.e.pts==1?'עונשין':'+'+r.e.pts)+'</div><div><b style="color:'+r.t.col+'">'+r.t.sh+'</b> · '+p.nm+' #'+p.n+' <span style="color:var(--mut);font-size:12px">רבע '+r.e.q+'</span></div><div class="r">'+r.t.sh+' '+r.e.s+'</div></div>'}).join('');
+ return '<div class="card"><h2>מהלך המשחק</h2><div class="rd" id="rd">'+rdTxt(40)+'</div>'+s+'<div style="font-size:12px;color:var(--mut);margin-top:6px">גררו על הגרף לראות את התוצאה בכל רגע.</div></div><div class="card"><details'+(fq?' open':'')+'><summary style="font-weight:700;cursor:pointer">כל הקליעות ('+all.length+')</summary>'+lst+'</details></div>'}
+function bindFlow(){var f=document.getElementById('fr');if(!f)return;var s=document.getElementById('fl'),c=document.getElementById('cx'),r=document.getElementById('rd');function mv(e){var b=s.getBoundingClientRect(),x=(e.clientX-b.left)/b.width*340,m=Math.max(0,Math.min(40,(x-26)/304*40)),px=26+m/40*304;c.setAttribute('x1',px);c.setAttribute('x2',px);c.setAttribute('visibility','visible');r.innerHTML=rdTxt(m)}f.addEventListener('pointermove',mv);f.addEventListener('pointerdown',mv)}
+function cz(t,mx){var s=st(t.ev,V.fq),o=function(n){return (.12+.7*n/mx).toFixed(2)},arc='M35 250V170A115 115 0 0 1 265 170V250Z',tx=function(y,n,l,sz){return '<text x="150" y="'+y+'" text-anchor="middle" font-size="'+sz+'" font-weight="800" fill="currentColor">'+n+'</text><text x="150" y="'+(y+13)+'" text-anchor="middle" font-size="10" fill="currentColor">'+l+'</text>'};
+ return '<div><div style="text-align:center;font-weight:800;color:'+t.col+'">'+t.sh+' · '+s.pts+' נק׳</div><svg viewBox="0 0 300 260" width="100%" style="direction:ltr" role="img" aria-label="מפת קליעות '+t.n+'"><path fill-rule="evenodd" fill="'+t.hex+'" fill-opacity="'+o(s.t3)+'" d="M10 10H290V250H10Z '+arc+'"/><path fill="'+t.hex+'" fill-opacity="'+o(s.t2)+'" d="'+arc+'"/><circle cx="150" cy="130" r="27" fill="'+t.hex+'" fill-opacity="'+o(s.ft)+'"/><g fill="none" stroke="var(--mut)" stroke-width="1.5"><rect x="10" y="10" width="280" height="240"/><path d="M35 250V170A115 115 0 0 1 265 170V250"/><rect x="110" y="130" width="80" height="120"/><circle cx="150" cy="130" r="27"/><circle cx="150" cy="228" r="7"/><path d="M135 238H165"/></g>'+tx(36,s.t3,'שלשות · '+s.t3*3+' נק׳',24)+tx(80,s.t2,'סלי 2 · '+s.t2*2+' נק׳',24)+tx(128,s.ft,'עונשין',18)+'</svg></div>'}
+function court(){var a=st(A.ev,V.fq),b=st(B.ev,V.fq),mx=Math.max(a.t3,a.t2,a.ft,b.t3,b.t2,b.ft,1);return '<div class="card"><h2>מפת קליעות · '+QN[V.fq]+'</h2><div class="crt">'+cz(A,mx)+cz(B,mx)+'</div><div style="font-size:12px;color:var(--mut);margin-top:8px">עוצמת הצבע מראה כמה קליעות נקלעו בכל אזור.</div></div>'}
+/* ---------- shell ---------- */
+function openGame(i){var g=G[i];V.gi=i;V.m='game';V.gt='ov';V.fq=0;A=g.t[0];B=g.t[1];cur=[A,B];W=A.end[3]>B.end[3]?A:B;Lz=W==A?B:A}
+function draw(){applyPal();var gm=V.m=='game',R=rows(),nav,body;
+ document.getElementById('hero').innerHTML=gm?heroGame():heroSeason();
+ document.getElementById('chips').innerHTML=gm?QN.map(function(x,i){return '<button class="chip" data-q="'+i+'" aria-pressed="'+(V.fq==i)+'">'+x+'</button>'}).join(''):'';
+ if(gm){nav=[['ov','📊','סקירה'],['pl','👥','שחקנים'],['fl','📈','מהלך'],['ct','🏀','מגרש']];body=V.gt=='ov'?ov():V.gt=='pl'?gpl():V.gt=='fl'?flow():court()}
+ else{nav=[['gm','📅','משחקים'],['pl','👥','שחקנים'],['tm','📊','קבוצה']];body=!R.length?'<div class="card empty">עדיין אין משחקים.</div>':V.tab=='gm'?sGames(R):V.tab=='pl'?sPlayers(R):sTeam(R)}
+ var key=gm?V.gt:V.tab;
+ document.getElementById('nav').innerHTML=nav.map(function(x){return '<button data-t="'+x[0]+'" aria-selected="'+(key==x[0])+'"><span>'+x[1]+'</span>'+x[2]+'</button>'}).join('');
+ document.getElementById('view').innerHTML=body;bindFlow()}
+document.addEventListener('click',function(e){var c=function(s){return e.target.closest(s)},t=c('[data-t]'),q=c('[data-q]'),g=c('[data-g]'),s=c('[data-s]'),p=c('[data-p]'),done=1;
+ if(p){V.pal=+p.dataset.p;try{localStorage.setItem('pal',V.pal)}catch(x){}}
+ else if(c('[data-pop]'))V.pop=V.pop?0:1;
+ else if(c('[data-back]')){V.m='season';V.pop=0}
+ else if(g){openGame(+g.dataset.g);V.pop=0}
+ else if(t){if(V.m=='game')V.gt=t.dataset.t;else V.tab=t.dataset.t}
+ else if(q)V.fq=+q.dataset.q;
+ else if(s)V.sk=s.dataset.s;
+ else done=0;
+ if(done){draw();if(g||t||c('[data-back]'))window.scrollTo(0,0)}});
+draw();
+</script>
+</body>
+</html>
