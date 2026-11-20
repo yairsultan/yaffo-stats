@@ -109,14 +109,13 @@ function sTeam(R){var f=function(k){return avg(R,function(r){return r.me[k]})},o
 function awd(t){var n=0;t.pl.forEach(function(p){p.f.forEach(function(f){n+=f=='P1'?1:f=='P2'?2:0})});return n}
 function cmp(lbl,a,b,fa,fb,lo){var s=a+b||1,w=a==b?0:((a>b)!=(lo==1)?1:2),k=function(i){return w==i?'font-weight:900;font-size:19px;color:'+cur[i-1].col:'color:var(--mut)'};return '<div class="cmp"><div class="l" style="'+k(1)+'">'+(fa||a)+'</div><div><div class="c">'+lbl+'</div><div class="bar"><span style="width:'+(a/s*100)+'%;background:'+A.hex+'"></span><span style="width:'+(b/s*100)+'%;background:'+B.hex+'"></span></div></div><div class="l" style="'+k(2)+'">'+(fb||b)+'</div></div>'}
 function best(q){var b=null;cur.forEach(function(t){t.pl.forEach(function(p){var s=st(p.ev,q);if(!b||s.pts>b.s.pts)b={p:p,t:t,s:s}})});return b}
-function cmpFT(a,b,aa,ab){var pa=aa?r1(a/aa*100):0,pb=ab?r1(b/ab*100):0,s=pa+pb||1,w=pa==pb?0:(pa>pb?1:2),k=function(i){return w==i?'font-weight:900;color:'+cur[i-1].col:'color:var(--mut)'},v=function(m,att,p){return '<div style="font-size:16px;font-weight:800;direction:ltr">'+m+'/'+att+'</div><div style="font-size:12px">'+p+'%</div>'};return '<div class="cmp" style="grid-template-columns:64px 1fr 64px"><div class="l" style="'+k(1)+'">'+v(a,aa,pa)+'</div><div><div class="c">עונשין · קליעות/זריקות</div><div class="bar"><span style="width:'+(pa/s*100)+'%;background:'+A.hex+'"></span><span style="width:'+(pb/s*100)+'%;background:'+B.hex+'"></span></div></div><div class="l" style="'+k(2)+'">'+v(b,ab,pb)+'</div></div>'}
 function ov(){var fq=V.fq,a=st(A.ev,fq),b=st(B.ev,fq),h='<div class="card sum">';
  if(!fq){var w=st(W.ev,0),l=st(Lz.ev,0),dq=1,dm=-99;[1,2,3,4].forEach(function(q){var d=qp(W,q)-qp(Lz,q);if(d>dm){dm=d;dq=q}});
   h+=W.n+' ניצחה '+W.end[3]+' מול '+Lz.end[3]+(w.t3>l.t3?', בזכות '+w.t3+' שלשות מול '+l.t3:'')+'. הרבע המכריע: רבע '+dq+' ('+qp(W,dq)+' מול '+qp(Lz,dq)+').'}
  else h+='רבע '+fq+': '+A.sh+' '+qp(A,fq)+' · '+B.sh+' '+qp(B,fq);
  var m=best(fq);h+='</div><div class="card mvp"><div class="n" style="color:'+m.t.col+'">'+m.s.pts+'</div><div><small>'+(fq?'מוביל הרבע':'שחקן המשחק')+'</small><b>'+m.p.nm+'</b> · '+m.t.sh+'<small>'+m.s.t3+' שלשות · '+m.s.t2+' סלי 2 · '+m.s.ft+' עונשין</small></div></div><div class="card"><h2>השוואה · '+QN[fq]+'</h2>'+cmp('שלשות',a.t3,b.t3)+cmp('סלי 2',a.t2,b.t2);
  var fta=!fq&&G[V.gi].fta;
- if(fta)h+=cmpFT(a.ft,b.ft,fta[0],fta[1]);else h+=cmp('עונשין שנקלעו',a.ft,b.ft);
+ if(fta){var pa=fta[0]?r1(a.ft/fta[0]*100):0,pb=fta[1]?r1(b.ft/fta[1]*100):0,sm=function(x){return '<span style="font-size:14px;white-space:nowrap;direction:ltr;unicode-bidi:isolate">'+x+'</span>'};h+=cmp('עונשין · קליעות/זריקות',a.ft,b.ft,sm(a.ft+'/'+fta[0]),sm(b.ft+'/'+fta[1]))+cmp('עונשין · אחוזים',pa,pb,sm(pa+'%'),sm(pb+'%'))}else h+=cmp('עונשין שנקלעו',a.ft,b.ft);
  if(!fq)h+=cmp('עבירות אישיות',A.fl,B.fl,0,0,1);
  if(fta&&G[V.gi].ftn)h+='<div style="font-size:12px;color:var(--mut);margin-top:6px;line-height:1.6">'+G[V.gi].ftn+'</div>';
  return h+'</div>'}
@@ -163,7 +162,7 @@ document.addEventListener('click',function(e){var c=function(s){return e.target.
  else if(s)V.sk=s.dataset.s;
  else done=0;
  if(done){draw();if(g||t||c('[data-back]'))window.scrollTo(0,0)}});
-fetch('games.json').then(function(r){return r.json()}).then(function(data){initData(data);draw()}).catch(function(){document.getElementById('view').innerHTML='<div class="card empty">לא ניתן לטעון את נתוני המשחקים.</div>'});
+fetch('games.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(data){initData(data);draw()}).catch(function(){document.getElementById('view').innerHTML='<div class="card empty">לא ניתן לטעון את נתוני המשחקים.</div>'});
 </script>
 </body>
 </html>
