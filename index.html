@@ -65,7 +65,7 @@ svg text{font-family:inherit}
 <header class="hero" id="hero"></header>
 <div class="chips" id="chips"></div>
 <main id="view"></main>
-<details class="how" id="how"><summary>איך זה מחושב</summary>הנתונים נקראים מטופס סיום המשחק. סוג הסל (1, 2 או 3 נקודות) נגזר מהפרש הנקודות בין קליעות עוקבות. החטאות לא מתועדות בטופס, ולכן אין אחוזי קליעה מהשדה. אין שעון בטופס: סוף כל רבע מדויק, והזמן בתוך הרבע משוער. מפת המגרש מראה סוג קליעה ולא מיקום. "משחקים" לשחקן = משחקים שבהם נרשם כמי שעלה לפרקט.</details>
+<details class="how" id="how"><summary>איך זה מחושב</summary>הנתונים נקראים מטופס סיום המשחק. סוג הסל (1, 2 או 3 נקודות) נגזר מהפרש הנקודות בין קליעות עוקבות. החטאות לא מתועדות בטופס, ולכן אין אחוזי קליעה מהשדה. מספר זריקות העונשין משוחזר מסימוני העבירות בטופס, ומוצג כחישוב מותנה כשהוא אינו נתון רשמי מלא. אין שעון בטופס: סוף כל רבע מדויק, והזמן בתוך הרבע משוער. מפת המגרש מראה סוג קליעה ולא מיקום. "משחקים" לשחקן = משחקים שבהם נרשם כמי שעלה לפרקט.</details>
 <nav class="nav" id="nav"></nav>
 <script>
 var US='הפועל יפו צעירים';
@@ -109,12 +109,17 @@ function sTeam(R){var f=function(k){return avg(R,function(r){return r.me[k]})},o
 function awd(t){var n=0;t.pl.forEach(function(p){p.f.forEach(function(f){n+=f=='P1'?1:f=='P2'?2:0})});return n}
 function cmp(lbl,a,b,fa,fb,lo){var s=a+b||1,w=a==b?0:((a>b)!=(lo==1)?1:2),k=function(i){return w==i?'font-weight:900;font-size:19px;color:'+cur[i-1].col:'color:var(--mut)'};return '<div class="cmp"><div class="l" style="'+k(1)+'">'+(fa||a)+'</div><div><div class="c">'+lbl+'</div><div class="bar"><span style="width:'+(a/s*100)+'%;background:'+A.hex+'"></span><span style="width:'+(b/s*100)+'%;background:'+B.hex+'"></span></div></div><div class="l" style="'+k(2)+'">'+(fb||b)+'</div></div>'}
 function best(q){var b=null;cur.forEach(function(t){t.pl.forEach(function(p){var s=st(p.ev,q);if(!b||s.pts>b.s.pts)b={p:p,t:t,s:s}})});return b}
+function cmpFT(a,b,aa,ab){var pa=aa?r1(a/aa*100):0,pb=ab?r1(b/ab*100):0,s=pa+pb||1,w=pa==pb?0:(pa>pb?1:2),k=function(i){return w==i?'font-weight:900;color:'+cur[i-1].col:'color:var(--mut)'},v=function(m,att,p){return '<div style="font-size:16px;font-weight:800;direction:ltr">'+m+'/'+att+'</div><div style="font-size:12px">'+p+'%</div>'};return '<div class="cmp" style="grid-template-columns:64px 1fr 64px"><div class="l" style="'+k(1)+'">'+v(a,aa,pa)+'</div><div><div class="c">עונשין · קליעות/זריקות</div><div class="bar"><span style="width:'+(pa/s*100)+'%;background:'+A.hex+'"></span><span style="width:'+(pb/s*100)+'%;background:'+B.hex+'"></span></div></div><div class="l" style="'+k(2)+'">'+v(b,ab,pb)+'</div></div>'}
 function ov(){var fq=V.fq,a=st(A.ev,fq),b=st(B.ev,fq),h='<div class="card sum">';
  if(!fq){var w=st(W.ev,0),l=st(Lz.ev,0),dq=1,dm=-99;[1,2,3,4].forEach(function(q){var d=qp(W,q)-qp(Lz,q);if(d>dm){dm=d;dq=q}});
   h+=W.n+' ניצחה '+W.end[3]+' מול '+Lz.end[3]+(w.t3>l.t3?', בזכות '+w.t3+' שלשות מול '+l.t3:'')+'. הרבע המכריע: רבע '+dq+' ('+qp(W,dq)+' מול '+qp(Lz,dq)+').'}
  else h+='רבע '+fq+': '+A.sh+' '+qp(A,fq)+' · '+B.sh+' '+qp(B,fq);
- var m=best(fq);h+='</div><div class="card mvp"><div class="n" style="color:'+m.t.col+'">'+m.s.pts+'</div><div><small>'+(fq?'מוביל הרבע':'שחקן המשחק')+'</small><b>'+m.p.nm+'</b> · '+m.t.sh+'<small>'+m.s.t3+' שלשות · '+m.s.t2+' סלי 2 · '+m.s.ft+' עונשין</small></div></div><div class="card"><h2>השוואה · '+QN[fq]+'</h2>'+cmp('שלשות',a.t3,b.t3)+cmp('סלי 2',a.t2,b.t2)+cmp('עונשין שנקלעו',a.ft,b.ft);
- if(!fq)h+=cmp('עבירות אישיות',A.fl,B.fl,0,0,1);return h+'</div>'}
+ var m=best(fq);h+='</div><div class="card mvp"><div class="n" style="color:'+m.t.col+'">'+m.s.pts+'</div><div><small>'+(fq?'מוביל הרבע':'שחקן המשחק')+'</small><b>'+m.p.nm+'</b> · '+m.t.sh+'<small>'+m.s.t3+' שלשות · '+m.s.t2+' סלי 2 · '+m.s.ft+' עונשין</small></div></div><div class="card"><h2>השוואה · '+QN[fq]+'</h2>'+cmp('שלשות',a.t3,b.t3)+cmp('סלי 2',a.t2,b.t2);
+ var fta=!fq&&G[V.gi].fta;
+ if(fta)h+=cmpFT(a.ft,b.ft,fta[0],fta[1]);else h+=cmp('עונשין שנקלעו',a.ft,b.ft);
+ if(!fq)h+=cmp('עבירות אישיות',A.fl,B.fl,0,0,1);
+ if(fta&&G[V.gi].ftn)h+='<div style="font-size:12px;color:var(--mut);margin-top:6px;line-height:1.6">'+G[V.gi].ftn+'</div>';
+ return h+'</div>'}
 function prow(p,t,s){var dots='';for(var i=0;i<5;i++)dots+='<i class="'+(i<p.f.length?'on':'')+'"></i>';var qs=[1,2,3,4].map(function(q){return 'רבע '+q+': <b>'+st(p.ev,q).pts+'</b>'}).join(' · ');
  return '<details class="pr"><summary><span class="no">'+p.n+'</span><div><div class="nm">'+p.nm+'</div><div class="sub">'+s.t3+' שלשות · '+s.t2+' סלי 2 · '+s.ft+' עונשין</div></div><b class="pt" style="color:'+(s.pts?t.col:'var(--mut)')+'">'+s.pts+'</b></summary><div class="dt">'+qs+'<br>עבירות: <span class="dots">'+dots+'</span> '+p.f.length+'</div></details>'}
 function gpl(){return cur.map(function(t){var r=t.pl.map(function(p){return{p:p,s:st(p.ev,V.fq)}}).sort(function(x,y){return y.s.pts-x.s.pts||x.p.n-y.p.n});return '<div class="card"><h2 style="color:'+t.col+'">'+t.n+'</h2>'+r.map(function(x){return prow(x.p,t,x.s)}).join('')+'</div>'}).join('')}
