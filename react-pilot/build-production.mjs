@@ -1,0 +1,10 @@
+import { spawnSync } from 'node:child_process';
+import { copyFileSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+const build = spawnSync(process.execPath, ['node_modules/vite/bin/vite.js', 'build'], { stdio: 'inherit', env: { ...process.env, VITE_APP_MODE: 'production' } });
+if (build.status) process.exit(build.status);
+for (const name of readdirSync('dist')) if (/\.(js|css)$/.test(name)) copyFileSync(resolve('dist', name), resolve('..', name));
+let html = readFileSync('dist/pilot.html', 'utf8').replace('<title>פיילוט ניווט · הפועל יפו צעירים</title>', '<title>הפועל יפו צעירים · סטטיסטיקות עונה</title>');
+html = html.replace('</body>', '<noscript>יש להפעיל JavaScript כדי לצפות בנתוני המשחקים.</noscript></body>');
+writeFileSync('../index.html', html);
+console.log('Updated root HTML and hashed assets. Root games.json and fixtures.json were not rewritten.');
