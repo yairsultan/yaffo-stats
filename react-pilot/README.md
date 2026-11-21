@@ -1,10 +1,16 @@
-# React navigation pilot
+# React site and isolated review mode
 
-Review-only pilot. It does not replace or change the production `index.html`, change Pages settings, or deploy itself.
+The React source keeps the site's existing Hebrew/RTL design and statistics, with separate season/game routes and native links. Production uses the root `index.html` and hashed JavaScript/CSS assets. The old isolated preview under `pilot-preview/` remains a review snapshot and does not update automatically.
 
-## Run locally
+## Data updates
 
-Use Node 22.12+ and npm.
+Continue editing the repository's root `games.json` and `fixtures.json`. Production fetches these files with `cache: 'no-store'`. No rebuild is needed for a normal data update.
+
+Existing games now carry explicit `id` metadata equal to their already-shared route IDs. Keep this `id` unchanged if correcting a game's date/team names or reordering the file. New games without an ID get a deterministic date/team fallback; set that resulting ID explicitly when publishing the game. Do not reuse IDs. Duplicate IDs fail visibly rather than opening a different game. Statistical fields and their interpretation are unchanged.
+
+## Local review and production build
+
+Node 22.12+ and npm:
 
 ```sh
 cd react-pilot
@@ -12,7 +18,7 @@ npm ci
 npm run dev
 ```
 
-Open the local Vite URL with `/yaffo-stats/pilot.html` appended. The dev server reads `../games.json` and `../fixtures.json` directly. Update those existing files as before, not a copy in this folder.
+Open the local URL at `/yaffo-stats/pilot.html`. Development reads the existing root JSON files. The default review build keeps the review banner and sends no tracking.
 
 ```sh
 npm test
@@ -20,38 +26,25 @@ npm run build
 npm run preview
 ```
 
-Build output is isolated in `react-pilot/dist`. The build copies the unchanged root JSON files into that output. `pilot.html` is the entry point, not `index.html`. There is deliberately no deployment workflow in this change.
+To regenerate the production root files after a source change:
 
-## What to review
-
-- Separate season games, season players, and team screens.
-- Nested game overview, players, flow, and court screens.
-- Copy a game/tab URL, open it in another tab, and refresh. The game, tab, and quarter stay selected.
-- Switching game tabs and quarters keeps the vertical scroll position. Back and Forward restore the selected screen and its saved position. Reload restoration uses tab-local session storage and remains optional if storage is blocked.
-- Native links support keyboard activation, opening in another tab, and copying a destination.
-- Existing `#full` schedule links redirect to the full schedule screen.
-- Unknown game IDs show an explicit not-found screen. Invalid quarter parameters use the full game.
-
-Example route shapes:
-
-```text
-pilot.html#/games
-pilot.html#/players
-pilot.html#/team
-pilot.html#/games/<stable-game-id>/players?q=4
+```sh
+npm run build:production
 ```
 
-Game IDs use the source date and a deterministic hash of the two source team names, not the array index. Reordering games does not change links. Correcting a game date or team name can change its ID; alias handling for such corrections would need a separate decision before a full migration.
+This writes root `index.html` and hashed JS/CSS files. It never rewrites the root JSON data. Commit the source and generated root files together. Keep previously published hashed files until old open pages no longer need them. The existing GitHub Pages branch deployment remains the hosting workflow, with no new server.
 
-## Boundaries
+## Navigation and behavior
 
-- Same root source data and statistical interpretation as production, including the existing conditional free-throw estimates and caveats. No new appearances or player facts.
-- All source roster members remain visible. Yafo appears first in game players.
-- Existing Hebrew/RTL design, theme colors, saved palette, and taller flow chart are retained. The pilot adds a small review banner.
-- No analytics script, external fonts, replay, duration collection, or other tracking is loaded. A tested navigation adapter emits local `pilot:navigation` events only. Connecting it to production analytics is not part of this pilot.
-- This branch is a navigation pilot, separate from production usability fixes.
+Routes include `#/games`, `#/players`, `#/team`, and `#/games/<stable-id>/<overview|players|flow|court>?q=4`. Copied links and refresh retain the selected game/tab/quarter. Season sort uses `?sort=`. Tab changes preserve scroll; Back/Forward and reload restore saved positions. Reload scroll restoration is tab-local and optional when storage is blocked. `#full` opens the full schedule. Unknown games show an explicit not-found screen.
 
-## Browser checks
+All source roster members remain visible and Yafo appears first in game players. The two recorded losses display as `0–2` with explicit left-to-right numerals, and the average as `-9`. Existing free-throw estimate warnings and methodology disclosures remain. No statistics, appearances, or FL/B1 interpretation were changed.
+
+## Analytics
+
+Production mode preserves the existing Umami website ID, hostname restriction, Do Not Track setting, search/hash exclusion, and only `game_open` / `tab_view` aggregate event fields. Quarter filters, sorting, rerenders, and chart gestures do not count as new logical screens. Slow or blocked analytics never prevents navigation. No duration, replay, identity, or other collection was added. Review mode loads no analytics script.
+
+## Tests
 
 ```sh
 npx playwright install chromium webkit
@@ -60,8 +53,6 @@ npm run test:browser
 BROWSER_ENGINE=webkit npm run test:browser
 ```
 
-If using a system Chromium, set `BROWSER_EXECUTABLE` to its executable path. Some Linux hosts need Playwright's documented browser system dependencies.
+Set `BROWSER_EXECUTABLE` when using a system Chromium. Some Linux hosts need Playwright system dependencies. The browser tests serve the built output at the actual Pages base path and cover viewport/theme layouts, trusted mobile taps, direct/copy/reload links, quarter state, Back/Forward, scroll preservation, roster completeness, schedule compatibility, invalid routes, and absence of external requests in review/local contexts. Generated test artifacts are ignored.
 
-The browser script serves the actual built output at the GitHub Pages base path. It checks direct/copy/reload links, quarter state, Back/Forward, scroll preservation, roster completeness, schedule compatibility, not-found handling, horizontal page overflow, and absence of external requests. It runs five widths in light and dark themes, plus trusted mobile taps at four widths. Screenshots and the local test report go into ignored `test-artifacts/`.
-
-WebKit coverage is an engine test, not physical iPhone/Safari testing. Physical Android Chrome acceptance of the new pilot remains part of review before a full migration.
+Release checks also compare every game/quarter's overview, player rows, flow paths/events, and court values against the prior production implementation, plus numerical and failure/analytics cases. WebKit is an engine check, not a claim of physical Safari-device testing.
