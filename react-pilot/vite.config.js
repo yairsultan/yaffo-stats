@@ -19,5 +19,5 @@ export default defineConfig({
     },
   }],
   publicDir: false,
-  build: { rollupOptions: { input: resolve('pilot.html') } },
+  build: { assetsDir: '', rollupOptions: { input: resolve('pilot.html'), output: { manualChunks(id) { if (id.includes('node_modules/react-dom') || id.includes('node_modules/scheduler')) return 'react-dom'; if (id.includes('node_modules/')) return 'vendor'; } } } },
 });
