@@ -11,6 +11,7 @@ export function stats(events, quarter = 0) {
 }
 // IDs depend on immutable game identity, never its array position.
 export function gameId(game) {
+  if (game.id) { if (!/^[a-zA-Z0-9_-]+$/.test(game.id)) throw new Error('Invalid stable game ID'); return game.id; }
   const date = game.d.split('/').reverse().join('-');
   const identity = game.t.map(team => team.n).join('|');
   let hash = 2166136261;
