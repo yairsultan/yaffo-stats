@@ -1,0 +1,27 @@
+{
+  "name": "yaffo-stats-react-pilot",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node --test pilot-data.test.js",
+    "test:browser": "node browser-smoke.cjs",
+    "build:production": "node build-production.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-router-dom": "7.18.6"
+  },
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "playwright": "1.65.1",
+    "vite": "8.3.8",
+    "@vitejs/plugin-react": "6.3.0"
+  }
+}
