@@ -94,7 +94,7 @@ details.how{margin:12px 18px;color:var(--mut);font-size:12px;line-height:1.7}
 svg text{font-family:inherit}
 </style>
 
-<script data-goatcounter="https://yaffo-stats.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<script id="site-analytics" defer src="https://cloud.umami.is/script.js" data-website-id="fd4d8192-b382-4a33-b00a-f80a6b740e05" data-domains="yairsultan.github.io" data-exclude-search="true" data-exclude-hash="true" data-do-not-track="true"></script>
 </head>
 <body>
 <header class="hero" id="hero"></header>
@@ -196,6 +196,32 @@ function sFix(){if(!FX.length)return'';var now=new Date(),nx=null,i;
  var h='<div class="card"><div class="nx"><span>המשחק הבא · מחזור '+nx.r+'</span><span class="pill">'+soon+'</span></div><div class="who">'+nx.o+' <span class="pill ha">'+(nx.h?'בית':'חוץ')+'</span></div><div class="when">יום '+FXWD[nx.dt.getDay()]+', '+nx.dt.getDate()+' ב'+FXMN[nx.dt.getMonth()]+' · '+nx.t+' · '+nx.v+'</div>'+wz(nx);
  h+='<details class="fx"'+open+'><summary><span>לוח המשחקים המלא · '+FX.length+' משחקים נותרו</span><span>▾</span></summary>'+FX.map(function(f){return '<div class="fxr"><div class="fd">'+f.dt.getDate()+'/'+(f.dt.getMonth()+1)+'</div><div><b>'+f.o+'</b><div class="ft2">'+FXWD[f.dt.getDay()]+' · '+f.t+' · '+f.v+'</div></div><div class="fxc"><span class="pill'+(f==nx?' ha':'')+'">'+(f.h?'בית':'חוץ')+'</span>'+wz(f,1)+'</div></div>'}).join('')+'</details></div>';
  return h}
+/* ---------- aggregate navigation analytics ---------- */
+// Track view transitions, not renders, quarter filters, sorting or chart gestures.
+// Queue only in memory for a slow script; blocked analytics never blocks the UI.
+var analyticsLast=null,analyticsQueue=[];
+function flushAnalytics(){
+ if(!window.umami||typeof window.umami.track!='function')return;
+ var pending=analyticsQueue.splice(0);
+ pending.forEach(function(event){try{var result=window.umami.track(event.name,event.data);if(result&&typeof result.catch=='function')result.catch(function(){})}catch(e){}})
+}
+function navigationAnalytics(){try{
+ if(location.hostname!='yairsultan.github.io'||navigator.doNotTrack=='1')return;
+ var game=V.m=='game'?G[V.gi]:null,tab=game?V.gt:V.tab;
+ var gameKey=game?game.d+'|'+game.t.map(function(t){return t.n}).join('|'):'';
+ var viewKey=(game?'game|'+gameKey:'season')+'|'+tab;
+ if(analyticsLast&&analyticsLast.view==viewKey)return;
+ var data={scope:game?'game':'season',tab:game?({ov:'סקירה',pl:'שחקני המשחק',fl:'מהלך',ct:'מגרש'}[tab]):({gm:'משחקים',pl:'שחקני העונה',tm:'קבוצה'}[tab])};
+ if(game){data.date=game.d;data.game=game.t.map(function(t){return t.n}).join(' מול ');
+  if(!analyticsLast||analyticsLast.game!=gameKey)analyticsQueue.push({name:'game_open',data:{game:data.game,date:data.date}})}
+ analyticsQueue.push({name:'tab_view',data:data});
+ analyticsLast={view:viewKey,game:gameKey};
+ if(analyticsQueue.length>100)analyticsQueue.splice(0,analyticsQueue.length-100);
+ flushAnalytics()
+ }catch(e){}}
+var analyticsScript=document.getElementById('site-analytics');
+if(analyticsScript)analyticsScript.addEventListener('load',flushAnalytics);
+
 /* ---------- shell ---------- */
 function openGame(i){var g=G[i];V.gi=i;V.m='game';V.gt='ov';V.fq=0;A=g.t[0];B=g.t[1];cur=[A,B];W=A.end[3]>B.end[3]?A:B;Lz=W==A?B:A}
 function draw(){applyPal();var gm=V.m=='game',R=rows(),nav=[['gm','📅','משחקים'],['pl','👥','שחקני העונה'],['tm','📊','קבוצה']],body;
@@ -207,7 +233,7 @@ function draw(){applyPal();var gm=V.m=='game',R=rows(),nav=[['gm','📅','משח
  else body=V.tab=='gm'?sFix()+(!R.length?'<div class="card empty">עדיין אין משחקים.</div>':sGames(R)):V.tab=='pl'?sPlayers(R):sTeam(R);
  var key=gm?'gm':V.tab;
  document.getElementById('nav').innerHTML=nav.map(function(x){return '<button data-t="'+x[0]+'"'+(key==x[0]?' aria-current="page"':'')+'><span>'+x[1]+'</span>'+x[2]+'</button>'}).join('');
- document.getElementById('view').innerHTML=body;bindFlow()}
+ document.getElementById('view').innerHTML=body;bindFlow();navigationAnalytics()}
 function focusScreen(){var h=document.getElementById('screen-heading');if(h)h.focus({preventScroll:true});window.scrollTo(0,0)}
 
 /* ---------- history ---------- */
