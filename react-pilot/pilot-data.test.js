@@ -36,3 +36,7 @@ test('aggregate adapter deduplicates renders/quarters and counts transitions onc
   assert.deepEqual(events.map(e => e.name), ['tab_view', 'game_open', 'tab_view', 'tab_view', 'tab_view']);
   assert.equal(events[1].data.date, '18/11/2026'); assert(events[1].data.game.includes('הפועל יפו צעירים'));
 });
+
+test('explicit published IDs survive name/date corrections', () => {
+ for (const g of source) { const id=gameId(g); const edited=structuredClone(g); edited.id=id; edited.d='01/01/2030'; edited.t[0].n+=' correction'; assert.equal(gameId(edited),id); }
+});
