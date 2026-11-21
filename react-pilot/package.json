@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "test": "node --test pilot-data.test.js",
-    "test:browser": "node browser-smoke.cjs"
+    "test:browser": "node browser-smoke.cjs",
+    "build:production": "node build-production.mjs"
   },
   "keywords": [],
   "author": "",
