@@ -40,3 +40,30 @@ test('aggregate adapter deduplicates renders/quarters and counts transitions onc
 test('explicit published IDs survive name/date corrections', () => {
  for (const g of source) { const id=gameId(g); const edited=structuredClone(g); edited.id=id; edited.d='01/01/2030'; edited.t[0].n+=' correction'; assert.equal(gameId(edited),id); }
 });
+import { leagueTable, teamByName, balanceTone, normTeam, usTechLosses, US_ID } from './pilot-data.js';
+const league = JSON.parse(readFileSync(new URL('../league.json', import.meta.url)));
+const fixtures = JSON.parse(readFileSync(new URL('../fixtures.json', import.meta.url)));
+test('league table: every game counted once per team, totals balance', () => {
+  const table = leagueTable(league);
+  const played = league.games.filter(g => g.hs !== undefined).length;
+  assert.equal(table.reduce((s, r) => s + r.gp, 0), played * 2);
+  assert.equal(table.reduce((s, r) => s + r.w, 0), played);
+  assert.equal(table.reduce((s, r) => s + r.pf, 0), table.reduce((s, r) => s + r.pa, 0));
+  for (const r of table) assert.equal(r.form.length, r.gp);
+});
+test('every fixture opponent resolves to a league team, never to our own team', () => {
+  const table = leagueTable(league);
+  for (const f of fixtures) { const t = teamByName(table, f.o); assert(t, f.o); assert.notEqual(t.id, US_ID); }
+  assert.notEqual(teamByName(table, 'הפועל יפו').id, teamByName(table, 'הפועל יפו צעירים').id);
+});
+test('our scoresheet games match the league results; technical loss is flagged', () => {
+  const us = leagueTable(league).find(r => r.id === US_ID);
+  const tech = usTechLosses(league);
+  assert.equal(tech.length, 1); assert.equal(tech[0].win, false);
+  for (const g of games) {
+    const [d, m, y] = g.d.split('/'); const lg = league.games.find(x => x.d === `${y}-${m}-${d}` && (x.h === US_ID || x.a === US_ID));
+    assert(lg, g.d); assert.equal(lg.h === US_ID ? lg.hs : lg.as, g.us.pts); assert.equal(lg.h === US_ID ? lg.as : lg.hs, g.opponent.pts);
+  }
+  assert(us.gp >= games.length + tech.length);
+});
+test('balance tone', () => { assert.equal(balanceTone({ gp: 3, w: 2, l: 1 }), 'pos'); assert.equal(balanceTone({ gp: 3, w: 1, l: 2 }), 'neg'); assert.equal(balanceTone({ gp: 2, w: 1, l: 1 }), 'even'); assert.equal(balanceTone({ gp: 0, w: 0, l: 0 }), 'even'); assert.equal(normTeam('מכבי שוהם-תל אביב ניצ'), normTeam('מכבי שהם/תל אביב ניצ')); });
