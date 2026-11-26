@@ -1,6 +1,6 @@
 export const US = 'הפועל יפו צעירים';
 export const QUARTERS = ['כל המשחק', 'רבע 1', 'רבע 2', 'רבע 3', 'רבע 4'];
-export const TABS = [['overview', 'סקירה'], ['players', 'שחקני המשחק'], ['flow', 'מהלך'], ['court', 'מגרש']];
+export const TABS = [['overview', 'סקירה'], ['players', 'שחקנים'], ['flow', 'מהלך'], ['court', 'מגרש']];
 export const round1 = value => Math.round(value * 10) / 10;
 export const average = (items, get) => items.length ? items.reduce((sum, item) => sum + get(item), 0) / items.length : 0;
 export const quarterPoints = (team, quarter) => team.end[quarter - 1] - (quarter > 1 ? team.end[quarter - 2] : 0);
