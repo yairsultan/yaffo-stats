@@ -94,3 +94,11 @@ test('profiles and insights use only games with stats and skip technical results
   const { weak, strong } = prepInsights(league, swish, 171321);
   assert(weak.length + strong.length > 0); assert(weak.every(r => r.gap > 0));
 });
+
+test('league diff is a total that includes the technical game; averages exclude it', () => {
+  const league = JSON.parse(readFileSync(new URL('../league.json', import.meta.url)));
+  for (const row of leagueTable(league)) {
+    assert.equal(row.diff, row.pf - row.pa);
+    assert.equal(row.ppg, row.agp ? row.pfn / row.agp : 0);
+  }
+});

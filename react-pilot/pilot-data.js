@@ -94,7 +94,7 @@ export function leagueTable(league) {
       const win = f > a; row[win ? 'w' : 'l']++; row.pf += f; row.pa += a; row.form.push(win ? 'W' : 'L'); if (g.tech) row.tech++; else { row.pfn += f; row.pan += a; row.agp++; }
     }
   }
-  return [...rows.values()].map(r => { const gp = r.w + r.l; return { ...r, gp, pct: gp ? r.w / gp : 0, ppg: r.agp ? r.pfn / r.agp : 0, papg: r.agp ? r.pan / r.agp : 0, diff: r.pfn - r.pan }; })
+  return [...rows.values()].map(r => { const gp = r.w + r.l; return { ...r, gp, pct: gp ? r.w / gp : 0, ppg: r.agp ? r.pfn / r.agp : 0, papg: r.agp ? r.pan / r.agp : 0, diff: r.pf - r.pa }; })
     .sort((a, b) => b.pct - a.pct || (b.pf - b.pa) - (a.pf - a.pa) || a.name.localeCompare(b.name, 'he'));
 }
 export const teamByName = (table, name) => table.find(r => normTeam(r.name) === normTeam(name));
