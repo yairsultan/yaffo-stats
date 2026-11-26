@@ -32,7 +32,7 @@ test('aggregate adapter deduplicates renders/quarters and counts transitions onc
   const events = [], track = createNavigationTracker((name, data) => events.push({ name, data }));
   track({ tab: 'משחקים' }); track({ tab: 'משחקים' });
   track({ game: games[1], tab: 'סקירה' }); track({ game: games[1], tab: 'סקירה' });
-  track({ game: games[1], tab: 'שחקני המשחק' }); track({ game: games[1], tab: 'סקירה' });
+  track({ game: games[1], tab: 'שחקנים' }); track({ game: games[1], tab: 'סקירה' });
   assert.deepEqual(events.map(e => e.name), ['tab_view', 'game_open', 'tab_view', 'tab_view', 'tab_view']);
   assert.equal(events[1].data.date, '18/11/2026'); assert(events[1].data.game.includes('הפועל יפו צעירים'));
 });
