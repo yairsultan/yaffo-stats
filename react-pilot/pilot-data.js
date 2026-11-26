@@ -86,16 +86,16 @@ export const US_ID = 1500181;
 export const normTeam = name => String(name).replace(/["״'׳”“]/g, '').replace(/[\/\-–]/g, ' ').replace(/שוהם/g, 'שהם').replace(/\s+/g, ' ').trim();
 export function leagueTable(league) {
   if (!league?.teams || !league?.games) return [];
-  const rows = new Map(league.teams.map(t => [t.id, { id: t.id, name: t.name, us: t.id === US_ID, w: 0, l: 0, pf: 0, pa: 0, form: [], tech: 0 }]));
+  const rows = new Map(league.teams.map(t => [t.id, { id: t.id, name: t.name, us: t.id === US_ID, w: 0, l: 0, pf: 0, pa: 0, form: [], tech: 0, pfn: 0, pan: 0, agp: 0 }]));
   for (const g of league.games) {
     if (g.hs === undefined || g.as === undefined) continue;
     for (const [id, f, a] of [[g.h, g.hs, g.as], [g.a, g.as, g.hs]]) {
       const row = rows.get(id); if (!row) continue;
-      const win = f > a; row[win ? 'w' : 'l']++; row.pf += f; row.pa += a; row.form.push(win ? 'W' : 'L'); if (g.tech) row.tech++;
+      const win = f > a; row[win ? 'w' : 'l']++; row.pf += f; row.pa += a; row.form.push(win ? 'W' : 'L'); if (g.tech) row.tech++; else { row.pfn += f; row.pan += a; row.agp++; }
     }
   }
-  return [...rows.values()].map(r => { const gp = r.w + r.l; return { ...r, gp, pct: gp ? r.w / gp : 0, ppg: gp ? r.pf / gp : 0, papg: gp ? r.pa / gp : 0, diff: r.pf - r.pa }; })
-    .sort((a, b) => b.pct - a.pct || b.diff - a.diff || a.name.localeCompare(b.name, 'he'));
+  return [...rows.values()].map(r => { const gp = r.w + r.l; return { ...r, gp, pct: gp ? r.w / gp : 0, ppg: r.agp ? r.pfn / r.agp : 0, papg: r.agp ? r.pan / r.agp : 0, diff: r.pfn - r.pan }; })
+    .sort((a, b) => b.pct - a.pct || (b.pf - b.pa) - (a.pf - a.pa) || a.name.localeCompare(b.name, 'he'));
 }
 export const teamByName = (table, name) => table.find(r => normTeam(r.name) === normTeam(name));
 // Tone of a record: green with more wins, red with more losses, neutral when level or no games yet.
@@ -135,10 +135,10 @@ export function prepInsights(league, swish, id) {
   const mine = teamProfile(league, swish, id);
   if (!mine || profiles.length < 3) return { weak: [], strong: [] };
   const rows = PREP_METRICS.map(([key, label, highBad]) => {
-    const mean = profiles.reduce((n, p) => n + p[key], 0) / profiles.length;
+    const mean = profiles.reduce((n, p) => n + p[key] * p.n, 0) / profiles.reduce((n, p) => n + p.n, 0);
     if (!mean) return null;
     const gap = (mine[key] - mean) / mean * (highBad ? 1 : -1);
-    return { key, label, value: mine[key], mean, gap };
+    return { key, label, value: mine[key], mean, gap, pct: Math.round(Math.abs(gap) * 100) };
   }).filter(Boolean).sort((a, b) => b.gap - a.gap);
   return { weak: rows.filter(r => r.gap > 0.05).slice(0, 3), strong: rows.filter(r => r.gap < -0.05).slice(-3).reverse() };
 }

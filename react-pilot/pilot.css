@@ -255,3 +255,20 @@ h2{font-size:16px;font-weight:800;line-height:1.3;margin:0 0 8px}
 .tg .bdg{width:100%;min-width:0;box-sizing:border-box;height:32px;font-size:13px}
 .tg>*{min-width:0}
 .tg .tm-main{overflow:hidden}
+/* Next-game card: prominent primary action */
+.acts{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
+.acts .wbtn{margin:0;justify-content:center;height:44px;box-sizing:border-box}
+.prep-cta{display:grid;grid-template-columns:36px minmax(0,1fr) 20px;align-items:center;column-gap:12px;height:56px;box-sizing:border-box;padding:0 14px;border-radius:16px;color:#fff;background:linear-gradient(135deg,var(--h2),var(--h1));box-shadow:0 6px 16px color-mix(in srgb,var(--h1) 35%,transparent);font-weight:800;font-size:16px}
+.prep-cta .pc-ic{width:36px;height:36px;border-radius:50%;background:var(--us);color:#0c1a30;display:grid;place-items:center}
+.prep-cta .pc-ic svg{width:20px;height:20px}.prep-cta .pc-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.prep-cta .pc-ch{width:20px;height:20px;color:#b4c3dc}
+.prep-cta:active{transform:scale(.985)}
+/* Prep screen: strengths and weaknesses */
+.pts{border-top:4px solid var(--tone)}
+.pts.strong{--tone:var(--win);--tone-bg:color-mix(in srgb,var(--win) 12%,transparent)}
+.pts.weak{--tone:var(--loss);--tone-bg:color-mix(in srgb,var(--loss) 12%,transparent)}
+.pts h2{display:flex;align-items:center;gap:10px;color:var(--ink)}
+.pts-ic{width:28px;height:28px;border-radius:50%;background:var(--tone);color:var(--badge-ink);display:grid;place-items:center;flex:none}.pts-ic svg{width:16px;height:16px}
+.pts .pt-row{grid-template-columns:minmax(0,1fr) 44px 58px;height:56px}
+.pts .pt-l{display:grid;gap:2px;min-width:0}.pts .pt-l b{font-size:14px}.pts .pt-l .mini{text-align:start}
+.pts .pt-row .num{font-size:20px;text-align:center;font-variant-numeric:tabular-nums}
+.pt-chip{justify-self:end;min-width:50px;box-sizing:border-box;text-align:center;font-weight:900;font-size:13px;padding:4px 0;border-radius:999px;background:var(--tone-bg);color:var(--tone);border:1px solid color-mix(in srgb,var(--tone) 35%,transparent)}
