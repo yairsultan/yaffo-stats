@@ -80,3 +80,24 @@ export function createNavigationTracker(track) {
 }
 
 export const gameURL = (game, tab = 'overview', q = 0) => `/games/${game.id}/${tab}${quarterSearch(q)}`;
+
+// League data (league.json, IBBA results). Names differ slightly between the league and fixtures.json, so match on a normalized name.
+export const US_ID = 1500181;
+export const normTeam = name => String(name).replace(/["״'׳”“]/g, '').replace(/[\/\-–]/g, ' ').replace(/שוהם/g, 'שהם').replace(/\s+/g, ' ').trim();
+export function leagueTable(league) {
+  if (!league?.teams || !league?.games) return [];
+  const rows = new Map(league.teams.map(t => [t.id, { id: t.id, name: t.name, us: t.id === US_ID, w: 0, l: 0, pf: 0, pa: 0, form: [], tech: 0 }]));
+  for (const g of league.games) {
+    if (g.hs === undefined || g.as === undefined) continue;
+    for (const [id, f, a] of [[g.h, g.hs, g.as], [g.a, g.as, g.hs]]) {
+      const row = rows.get(id); if (!row) continue;
+      const win = f > a; row[win ? 'w' : 'l']++; row.pf += f; row.pa += a; row.form.push(win ? 'W' : 'L'); if (g.tech) row.tech++;
+    }
+  }
+  return [...rows.values()].map(r => { const gp = r.w + r.l; return { ...r, gp, pct: gp ? r.w / gp : 0, ppg: gp ? r.pf / gp : 0, papg: gp ? r.pa / gp : 0, diff: r.pf - r.pa }; })
+    .sort((a, b) => b.pct - a.pct || b.diff - a.diff || a.name.localeCompare(b.name, 'he'));
+}
+export const teamByName = (table, name) => table.find(r => normTeam(r.name) === normTeam(name));
+// Tone of a record: green with more wins, red with more losses, neutral when level or no games yet.
+export const balanceTone = row => !row || !row.gp || row.w === row.l ? 'even' : row.w > row.l ? 'pos' : 'neg';
+export const usTechLosses = league => (league?.games || []).filter(g => g.tech && (g.h === US_ID || g.a === US_ID)).map(g => ({ ...g, win: (g.h === US_ID ? g.hs > g.as : g.as > g.hs) }));
