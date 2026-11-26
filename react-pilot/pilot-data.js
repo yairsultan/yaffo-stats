@@ -106,6 +106,42 @@ export const usTechLosses = league => (league?.games || []).filter(g => g.tech &
 export function teamGames(league, id) {
   return (league?.games || []).filter(g => g.hs !== undefined && g.as !== undefined && (g.h === id || g.a === id)).map(g => {
     const home = g.h === id, f = home ? g.hs : g.as, a = home ? g.as : g.hs;
-    return { d: g.d, t: g.t, home, oppId: home ? g.a : g.h, f, a, win: f > a, tech: !!g.tech };
+    return { d: g.d, t: g.t, hid: g.h, aid: g.a, home, oppId: home ? g.a : g.h, f, a, win: f > a, tech: !!g.tech };
   }).sort((x, y) => `${y.d}T${y.t}`.localeCompare(`${x.d}T${x.t}`));
+}
+
+// Per-game team stats from the Swish app (swish.json): [ft made, 2-pointers, 3-pointers, fouls] for home and away.
+const statObj = ([ft, p2, p3, fouls]) => ({ ft, p2, p3, fouls });
+export function swishStats(swish, g) {
+  const s = swish?.games?.[`${g.d}|${g.h}|${g.a}`];
+  return s ? { h: statObj(s.h), a: statObj(s.a) } : null;
+}
+// Average per game for and against one team, from games with Swish stats. Technical results are excluded.
+export function teamProfile(league, swish, id) {
+  const rows = (league?.games || []).filter(g => !g.tech && g.hs !== undefined && (g.h === id || g.a === id)).map(g => {
+    const s = swishStats(swish, g); if (!s) return null;
+    const home = g.h === id;
+    return { f: home ? s.h : s.a, o: home ? s.a : s.h, pts: home ? g.hs : g.as, ptsA: home ? g.as : g.hs };
+  }).filter(Boolean);
+  if (!rows.length) return null;
+  const avg = pick => rows.reduce((n, r) => n + pick(r), 0) / rows.length;
+  return { n: rows.length, pts: avg(r => r.pts), ptsA: avg(r => r.ptsA), p3: avg(r => r.f.p3), p2: avg(r => r.f.p2), ft: avg(r => r.f.ft), fouls: avg(r => r.f.fouls), p3A: avg(r => r.o.p3), p2A: avg(r => r.o.p2), ftA: avg(r => r.o.ft) };
+}
+// key, label, true when a higher number is worse for the team.
+export const PREP_METRICS = [['ptsA', 'נקודות שספגו', true], ['p2A', 'סלי 2 שספגו', true], ['p3A', 'שלשות שספגו', true], ['ftA', 'עונשין שספגו', true], ['fouls', 'עבירות', true], ['pts', 'נקודות שקלעו', false], ['p2', 'סלי 2 שקלעו', false], ['p3', 'שלשות שקלעו', false], ['ft', 'עונשין שקלעו', false]];
+// Weak and strong points: biggest gaps from the league average, in percent, among teams that have Swish stats.
+export function prepInsights(league, swish, id) {
+  const profiles = (league?.teams || []).map(t => teamProfile(league, swish, t.id)).filter(Boolean);
+  const mine = teamProfile(league, swish, id);
+  if (!mine || profiles.length < 3) return { weak: [], strong: [] };
+  const rows = PREP_METRICS.map(([key, label, highBad]) => {
+    const mean = profiles.reduce((n, p) => n + p[key], 0) / profiles.length;
+    if (!mean) return null;
+    const gap = (mine[key] - mean) / mean * (highBad ? 1 : -1);
+    return { key, label, value: mine[key], mean, gap };
+  }).filter(Boolean).sort((a, b) => b.gap - a.gap);
+  return { weak: rows.filter(r => r.gap > 0.05).slice(0, 3), strong: rows.filter(r => r.gap < -0.05).slice(-3).reverse() };
+}
+export function nextFixture(fixtures, nowText) {
+  return [...(fixtures || [])].sort((a, b) => `${a.d}T${a.t}`.localeCompare(`${b.d}T${b.t}`)).find(f => `${f.d}T${f.t}` >= nowText) || null;
 }

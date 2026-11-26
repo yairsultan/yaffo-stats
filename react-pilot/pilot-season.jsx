@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
-import { US, average, round1, seasonPlayers, gameURL, teamByName, usTechLosses, teamGames, leagueTable } from './pilot-data.js';
+import { US, average, round1, seasonPlayers, gameURL, teamByName, usTechLosses, teamGames, leagueTable, swishStats } from './pilot-data.js';
 import { useData, NotFound, ScreenLink, Comparison, Balance, Form } from './pilot-ui.jsx';
 function SeasonHeader({ title }) {
   const { games, league } = useData();
@@ -28,7 +28,7 @@ function Fixtures() {
   const soon = days <= 0 ? 'היום' : days === 1 ? 'מחר' : `בעוד ${days} ימים`;
   const nd = dateOf(next);
   function Waze({ fixture, small = false }) { return fixture.a ? <a className={`wbtn${small ? ' sm' : ''}`} href={`https://waze.com/ul?q=${encodeURIComponent(fixture.a)}&navigate=yes`} target="_blank" rel="noreferrer">🧭 {small ? 'ניווט' : 'ניווט ב־Waze'}</a> : null; }
-  return <section className="card"><div className="nx"><span>המשחק הבא · מחזור {next.r}</span><span className="pill">{soon}</span></div><div className="who">{next.o} <span className="pill ha">{next.h ? 'בית' : 'חוץ'}</span></div>{teamByName(table, next.o)?.gp > 0 && <div className="opp-bal"><Balance row={teamByName(table, next.o)} /><Form form={teamByName(table, next.o).form} /></div>}<div className="when">יום {dayNames[nd.getUTCDay()]}, {nd.getUTCDate()} ב{monthNames[nd.getUTCMonth()]} · {next.t} · {next.v}</div><Waze fixture={next} /><details className="fx" open={open} onToggle={e => setOpen(e.currentTarget.open)}><summary><span>לוח המשחקים המלא · {upcoming.length} משחקים נותרו</span><span>▾</span></summary>{ordered.map(f => { const date = dateOf(f); return <div className="fxr" key={`${f.d}-${f.o}`}><div className="fd">{date.getUTCDate()}/{date.getUTCMonth() + 1}</div><div><b>{f.o}</b> <Balance row={teamByName(table, f.o)} /><div className="ft2">{dayNames[date.getUTCDay()]} · {f.t} · {f.v}</div></div><div className="fxc"><span className={`pill${f === next ? ' ha' : ''}`}>{f.h ? 'בית' : 'חוץ'}</span><Waze fixture={f} small /></div></div>; })}</details></section>;
+  return <section className="card"><div className="nx"><span>המשחק הבא · מחזור {next.r}</span><span className="pill">{soon}</span></div><div className="who">{next.o} <span className="pill ha">{next.h ? 'בית' : 'חוץ'}</span></div>{teamByName(table, next.o)?.gp > 0 && <div className="opp-bal"><Balance row={teamByName(table, next.o)} /><Form form={teamByName(table, next.o).form} /></div>}<div className="when">יום {dayNames[nd.getUTCDay()]}, {nd.getUTCDate()} ב{monthNames[nd.getUTCMonth()]} · {next.t} · {next.v}</div><div className="acts"><Waze fixture={next} />{teamByName(table, next.o) && <ScreenLink className="wbtn" to="/prep">הכנה למשחק</ScreenLink>}</div><details className="fx" open={open} onToggle={e => setOpen(e.currentTarget.open)}><summary><span>לוח המשחקים המלא · {upcoming.length} משחקים נותרו</span><span>▾</span></summary>{ordered.map(f => { const date = dateOf(f); return <div className="fxr" key={`${f.d}-${f.o}`}><div className="fd">{date.getUTCDate()}/{date.getUTCMonth() + 1}</div><div><b>{f.o}</b> <Balance row={teamByName(table, f.o)} /><div className="ft2">{dayNames[date.getUTCDay()]} · {f.t} · {f.v}</div></div><div className="fxc"><span className={`pill${f === next ? ' ha' : ''}`}>{f.h ? 'בית' : 'חוץ'}</span><Waze fixture={f} small /></div></div>; })}</details></section>;
 }
 export function SeasonGames() {
   const { games, league } = useData();
@@ -67,7 +67,7 @@ export function SeasonLeague() {
   return <><SeasonHeader title="מצב הליגה" /><main><section className="card lt-card"><h2>טבלה ומאזן</h2><div className="lt-head" aria-hidden="true"><span /><span>קבוצה</span><span className="c-gp">מש׳</span><span className="c-avg">קלעה</span><span className="c-avg">ספגה</span><span>מאזן</span><span>הפרש</span><span /></div>{table.map((r, i) => <ScreenLink className={`tr${r.us ? ' us' : ''}`} key={r.id} to={`/league/${r.id}`}><span className="no">{i + 1}</span><span className="tn"><span className="nm">{r.name}</span><span className="tf"><Form form={r.form} /></span></span><span className="c-gp num">{r.gp}</span><span className="c-avg num">{round1(r.ppg)}</span><span className="c-avg num">{round1(r.papg)}</span><span className="c-bal"><Balance row={r} /></span><span className={`diff num ${r.diff > 0 ? 'pos' : r.diff < 0 ? 'neg' : ''}`} dir="ltr">{r.diff > 0 ? '+' : ''}{r.diff}</span><svg className="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" focusable="false"><path d="m14 6-6 6 6 6" /></svg></ScreenLink>)}</section></main></>;
 }
 export function LeagueTeam() {
-  const { table, league, games } = useData();
+  const { table, league, games, swish } = useData();
   const { teamId } = useParams();
   const row = table.find(r => String(r.id) === teamId);
   if (!row) return <NotFound />;
@@ -77,8 +77,12 @@ export function LeagueTeam() {
   return <><header className="hero"><div className="top">ליגה ב׳ · עונת 2026/27</div><h1 id="screen-heading" tabIndex={-1}>{row.name}</h1><div className="rec tm"><Balance row={row} /><Form form={row.form} /></div></header><main><section className="card">{list.map(g => {
     const [y, m, d] = g.d.split('-');
     const ours = row.us ? games.find(x => toISO(x.d) === g.d) : null;
-    const chev = <svg className="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" focusable="false">{ours ? <path d="m14 6-6 6 6 6" /> : null}</svg>;
+    const chev = <svg className="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" focusable="false">{ours ? <path d="m14 6-6 6 6 6" /> : swishStats(swish, { d: g.d, h: g.hid, a: g.aid }) ? <path d="m6 9 6 6 6-6" /> : null}</svg>;
     const body = <><div className={`bdg ${g.win ? 'W' : 'L'}`} dir="ltr" aria-label={g.win ? 'ניצחון' : 'הפסד'}>{g.win ? 'W' : 'L'}</div><div className="tm-main"><div className="t">{nameOf(g.oppId)}</div><div className="s"><span className="dt2" dir="ltr">{d}/{m}/{y}</span><span className="pill ha">{g.home ? 'בית' : 'חוץ'}</span></div></div><div className="sc2" dir="ltr">{g.f}–{g.a}</div>{chev}</>;
-    return ours ? <ScreenLink className="tg link" key={`${g.d}-${g.oppId}`} to={gameURL(ours)}>{body}</ScreenLink> : <div className="tg" key={`${g.d}-${g.oppId}`}>{body}</div>;
+    if (ours) return <ScreenLink className="tg link" key={`${g.d}-${g.oppId}`} to={gameURL(ours)}>{body}</ScreenLink>;
+    const st = swishStats(swish, { d: g.d, h: g.hid, a: g.aid });
+    if (!st) return <div className="tg" key={`${g.d}-${g.oppId}`}>{body}</div>;
+    const mine = g.home ? st.h : st.a, theirs = g.home ? st.a : st.h;
+    return <details className="tgd" key={`${g.d}-${g.oppId}`}><summary className="tg">{body}</summary><div className="tgs"><div className="tgs-h"><b style={{ color: 'var(--usT)' }}>{row.name}</b><b style={{ color: 'var(--themT)' }}>{nameOf(g.oppId)}</b></div>{[['p3', 'שלשות'], ['p2', 'סלי 2'], ['ft', 'עונשין'], ['fouls', 'עבירות']].map(([k, label]) => <Comparison key={k} label={label} a={mine[k]} b={theirs[k]} teamA={{ col: 'var(--usT)', hex: 'var(--us)' }} teamB={{ col: 'var(--themT)', hex: 'var(--them)' }} low={k === 'fouls'} />)}</div></details>;
   })}{!list.length && <p className="empty">עדיין אין משחקים.</p>}</section></main></>;
 }

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { prepareGames, gameId, stats, seasonPlayers, quarterPoints, parseQuarter, createNavigationTracker, gameURL, teamGames } from './pilot-data.js';
+import { prepareGames, gameId, stats, seasonPlayers, quarterPoints, parseQuarter, createNavigationTracker, gameURL, teamGames, swishStats, teamProfile, prepInsights } from './pilot-data.js';
 const source = JSON.parse(readFileSync(new URL('../games.json', import.meta.url)));
 const games = prepareGames(source);
 test('source is immutable, all game identities stable across reordering', () => {
@@ -77,4 +77,20 @@ test('team games list matches the league table record', () => {
     assert.equal(list.reduce((n, x) => n + x.f, 0), row.pf);
     assert(list.every((x, i) => i === 0 || `${list[i - 1].d}T${list[i - 1].t}` >= `${x.d}T${x.t}`));
   }
+});
+
+const swish = JSON.parse(readFileSync(new URL('../swish.json', import.meta.url)));
+test('every played league game has Swish stats that add up to the score (one known app rounding gap)', () => {
+  let off = 0;
+  for (const g of league.games.filter(x => x.hs !== undefined)) {
+    const s = swishStats(swish, g); assert(s, `missing stats ${g.d}`);
+    const pts = x => x.ft + 2 * x.p2 + 3 * x.p3;
+    if (pts(s.h) !== g.hs || pts(s.a) !== g.as) off++;
+  }
+  assert.equal(off, 1);
+});
+test('profiles and insights use only games with stats and skip technical results', () => {
+  assert.equal(teamProfile(league, swish, US_ID).n, 2);
+  const { weak, strong } = prepInsights(league, swish, 171321);
+  assert(weak.length + strong.length > 0); assert(weak.every(r => r.gap > 0));
 });
