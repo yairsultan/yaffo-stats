@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { US, average, round1, seasonPlayers, gameURL } from './pilot-data.js';
-import { useData, ScreenLink, Comparison } from './pilot-ui.jsx';
+import { US, average, round1, seasonPlayers, gameURL, teamByName, usTechLosses } from './pilot-data.js';
+import { useData, ScreenLink, Comparison, Balance, Form } from './pilot-ui.jsx';
 function SeasonHeader({ title }) {
-  const { games } = useData();
-  const wins = games.filter(g => g.us.pts > g.opponent.pts).length;
-  return <header className="hero"><div className="top">ליגה ב׳ · עונת 2026/27</div><h1 id="screen-heading" tabIndex={-1}>{title}</h1><div className="rec"><div><b>{games.length}</b><span>משחקים</span></div><div><b dir="ltr" aria-label={`${wins} ניצחונות, ${games.length - wins} הפסדים`}>{wins}–{games.length - wins}</b><span>ניצחונות–הפסדים</span></div><div><b dir="ltr">{round1(average(games, g => g.us.pts - g.opponent.pts))}</b><span>הפרש ממוצע</span></div></div></header>;
+  const { games, league } = useData();
+  const tech = usTechLosses(league);
+  const total = games.length + tech.length;
+  const wins = games.filter(g => g.us.pts > g.opponent.pts).length + tech.filter(g => g.win).length;
+  return <header className="hero"><div className="top">ליגה ב׳ · עונת 2026/27</div><h1 id="screen-heading" tabIndex={-1}>{title}</h1><div className="rec"><div><b>{total}</b><span>משחקים</span></div><div><b dir="ltr" aria-label={`${wins} ניצחונות, ${total - wins} הפסדים`}>{wins}–{total - wins}</b><span>ניצחונות–הפסדים</span></div><div><b dir="ltr">{round1(average(games, g => g.us.pts - g.opponent.pts))}</b><span>הפרש ממוצע</span></div></div></header>;
 }
 function Fixtures() {
-  const { fixtures } = useData();
+  const { fixtures, table } = useData();
   const location = useLocation();
   const [open, setOpen] = useState(new URLSearchParams(location.search).get('schedule') === 'full');
   useEffect(() => setOpen(new URLSearchParams(location.search).get('schedule') === 'full'), [location.search]);
@@ -26,14 +28,23 @@ function Fixtures() {
   const soon = days <= 0 ? 'היום' : days === 1 ? 'מחר' : `בעוד ${days} ימים`;
   const nd = dateOf(next);
   function Waze({ fixture, small = false }) { return fixture.a ? <a className={`wbtn${small ? ' sm' : ''}`} href={`https://waze.com/ul?q=${encodeURIComponent(fixture.a)}&navigate=yes`} target="_blank" rel="noreferrer">🧭 {small ? 'ניווט' : 'ניווט ב־Waze'}</a> : null; }
-  return <section className="card"><div className="nx"><span>המשחק הבא · מחזור {next.r}</span><span className="pill">{soon}</span></div><div className="who">{next.o} <span className="pill ha">{next.h ? 'בית' : 'חוץ'}</span></div><div className="when">יום {dayNames[nd.getUTCDay()]}, {nd.getUTCDate()} ב{monthNames[nd.getUTCMonth()]} · {next.t} · {next.v}</div><Waze fixture={next} /><details className="fx" open={open} onToggle={e => setOpen(e.currentTarget.open)}><summary><span>לוח המשחקים המלא · {upcoming.length} משחקים נותרו</span><span>▾</span></summary>{ordered.map(f => { const date = dateOf(f); return <div className="fxr" key={`${f.d}-${f.o}`}><div className="fd">{date.getUTCDate()}/{date.getUTCMonth() + 1}</div><div><b>{f.o}</b><div className="ft2">{dayNames[date.getUTCDay()]} · {f.t} · {f.v}</div></div><div className="fxc"><span className={`pill${f === next ? ' ha' : ''}`}>{f.h ? 'בית' : 'חוץ'}</span><Waze fixture={f} small /></div></div>; })}</details></section>;
+  return <section className="card"><div className="nx"><span>המשחק הבא · מחזור {next.r}</span><span className="pill">{soon}</span></div><div className="who">{next.o} <span className="pill ha">{next.h ? 'בית' : 'חוץ'}</span></div>{teamByName(table, next.o)?.gp > 0 && <div className="opp-bal"><Balance row={teamByName(table, next.o)} /><Form form={teamByName(table, next.o).form} /><span className="mini">מאזן וצורה של היריבה בליגה</span></div>}<div className="when">יום {dayNames[nd.getUTCDay()]}, {nd.getUTCDate()} ב{monthNames[nd.getUTCMonth()]} · {next.t} · {next.v}</div><Waze fixture={next} /><details className="fx" open={open} onToggle={e => setOpen(e.currentTarget.open)}><summary><span>לוח המשחקים המלא · {upcoming.length} משחקים נותרו</span><span>▾</span></summary>{ordered.map(f => { const date = dateOf(f); return <div className="fxr" key={`${f.d}-${f.o}`}><div className="fd">{date.getUTCDate()}/{date.getUTCMonth() + 1}</div><div><b>{f.o}</b> <Balance row={teamByName(table, f.o)} /><div className="ft2">{dayNames[date.getUTCDay()]} · {f.t} · {f.v}</div></div><div className="fxc"><span className={`pill${f === next ? ' ha' : ''}`}>{f.h ? 'בית' : 'חוץ'}</span><Waze fixture={f} small /></div></div>; })}</details></section>;
 }
 export function SeasonGames() {
-  const { games } = useData();
-  const chronological = [...games].sort((a, b) => a.d.split('/').reverse().join('-').localeCompare(b.d.split('/').reverse().join('-')));
-  return <><SeasonHeader title={US} /><Fixtures /><main><section className="card"><h2>משחקים</h2>{!games.length && <p className="empty">עדיין אין משחקים.</p>}{[...chronological].reverse().map((g, i) => {
-    const win = g.us.pts > g.opponent.pts;
-    return <ScreenLink className={`gm ${!i ? 'latest' : ''}`} key={g.id} to={gameURL(g)}><div className={`bdg ${win ? 'W' : 'L'}`}>{win ? 'ניצחון' : 'הפסד'}</div><div>{!i && <span className="latest-label">המשחק האחרון</span>}<div className="t">{g.us.sh} {g.us.pts} · {g.opponent.sh} {g.opponent.pts}</div><div className="s">{g.d} · מול {g.opponent.n}</div></div><div className="game-action"><span><span className="cta">לנתוני המשחק המלאים</span><span className="hint">קלעים · רבעים · השוואת קבוצות</span></span><span className="arrow-disc" aria-hidden="true"><svg className="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" focusable="false"><path d="m14 6-6 6 6 6" /></svg></span></div></ScreenLink>;
+  const { games, league } = useData();
+  const toISO = d => d.split('/').reverse().join('-');
+  const chronological = [...games].sort((a, b) => toISO(a.d).localeCompare(toISO(b.d)));
+  const tech = usTechLosses(league);
+  const latestId = [...chronological].reverse()[0]?.id;
+  const items = [...chronological.map(g => ({ key: g.id, date: toISO(g.d), game: g })), ...tech.map(g => ({ key: `tech-${g.d}`, date: g.d, tech: g }))].sort((a, b) => b.date.localeCompare(a.date));
+  const nameOf = id => league.teams.find(t => t.id === id)?.name;
+  return <><SeasonHeader title={US} /><Fixtures /><main><section className="card"><h2>משחקים</h2>{!items.length && <p className="empty">עדיין אין משחקים.</p>}{items.map(item => {
+    if (item.tech) {
+      const t = item.tech, [y, m, d] = t.d.split('-');
+      return <div className="gm tech" key={item.key}><div className={`bdg ${t.win ? 'W' : 'L'}`}>{t.win ? 'ניצחון טכני' : 'הפסד טכני'}</div><div><div className="t">{nameOf(t.h)} {t.hs} · {nameOf(t.a)} {t.as}</div><div className="s">{d}/{m}/{y} · תוצאה טכנית לפי ההתאחדות, אין טופס משחק</div></div></div>;
+    }
+    const g = item.game, win = g.us.pts > g.opponent.pts;
+    return <ScreenLink className={`gm ${g.id === latestId ? 'latest' : ''}`} key={g.id} to={gameURL(g)}><div className={`bdg ${win ? 'W' : 'L'}`}>{win ? 'ניצחון' : 'הפסד'}</div><div>{g.id === latestId && <span className="latest-label">המשחק האחרון</span>}<div className="t">{g.us.sh} {g.us.pts} · {g.opponent.sh} {g.opponent.pts}</div><div className="s">{g.d} · מול {g.opponent.n}</div></div><div className="game-action"><span><span className="cta">לנתוני המשחק המלאים</span><span className="hint">קלעים · רבעים · השוואת קבוצות</span></span><span className="arrow-disc" aria-hidden="true"><svg className="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" focusable="false"><path d="m14 6-6 6 6 6" /></svg></span></div></ScreenLink>;
   })}</section><section className="card"><h2>הפרש בכל משחק</h2><div className="sc"><svg viewBox={`0 0 ${Math.max(games.length * 70, 280)} 176`} width={Math.max(games.length * 70, 280)} style={{ direction: 'ltr' }} role="img" aria-label="הפרש בכל משחק בסדר כרונולוגי"><line x1="0" x2={Math.max(games.length * 70, 280)} y1="80" y2="80" stroke="var(--line)" />{chronological.map((g, i) => { const d = g.us.pts - g.opponent.pts, h = Math.min(Math.abs(d), 30) * 2.2; return <g key={g.id}><rect x={i * 70 + 18} y={d >= 0 ? 80 - h : 80} width="34" height={h} rx="4" fill={d >= 0 ? 'var(--win)' : 'var(--loss)'} /><text x={i * 70 + 35} y={d >= 0 ? 74 - h : 96 + h} fontSize="11" textAnchor="middle" fill="currentColor">{d > 0 ? '+' : ''}{d}</text><text x={i * 70 + 35} y="170" fontSize="10" textAnchor="middle" fill="var(--mut)">{g.d.slice(0, 5)}</text></g>; })}</svg></div></section></main></>;
 }
 export function SeasonPlayers() {
@@ -49,3 +60,12 @@ export function SeasonTeam() {
   const teamA = { col: 'var(--usT)', hex: 'var(--us)' }, teamB = { col: 'var(--themT)', hex: 'var(--them)' };
   return <><SeasonHeader title="נתוני הקבוצה" /><main className="card"><h2>ממוצע למשחק</h2><div className="team-labels"><b style={{ color: teamA.col }}>{US}</b><b style={{ color: teamB.col }}>יריבות</b></div>{[['pts', 'נקודות'], ['t3', 'שלשות'], ['ft', 'עונשין שנקלעו'], ['fl', 'עבירות אישיות']].map(([k, label]) => <Comparison key={k} label={label} a={average(games, g => g.us[k])} b={average(games, g => g.opponent[k])} teamA={teamA} teamB={teamB} low={k === 'fl'} />)}</main></>;
                                                     }
+
+export function SeasonLeague() {
+  const { table, league } = useData();
+  const played = (league?.games || []).filter(g => g.hs !== undefined).length;
+  const [date] = (league?.updated || '').split('T');
+  const [y, m, d] = date.split('-');
+  if (!table.length) return <><SeasonHeader title="מצב הליגה" /><main className="card"><p className="empty">נתוני הליגה אינם זמינים כרגע.</p></main></>;
+  return <><SeasonHeader title="מצב הליגה" /><main><section className="card"><h2>טבלה ומאזן</h2><p className="data-note" style={{ marginTop: -4 }}>ירוק: יותר ניצחונות מהפסדים · אדום: יותר הפסדים · אפור: שווה. ריבועי הצורה: עד 5 משחקים אחרונים (נ = ניצחון, ה = הפסד), האחרון בצד ימין.</p>{table.map((r, i) => <div className={`tr${r.us ? ' us' : ''}`} key={r.id}><span className="no">{i + 1}</span><div><div className="nm">{r.name}{r.us && ' (אנחנו)'}</div><div className="sub">קלעה {round1(r.ppg)} · ספגה {round1(r.papg)}</div><div className="sub">{r.gp} משחקים · הפרש <span dir="ltr" style={{ whiteSpace: 'nowrap' }}>{r.diff > 0 ? '+' : ''}{r.diff}</span>{r.tech ? ' · כולל הפסד טכני' : ''}</div></div><Form form={r.form} /><Balance row={r} /></div>)}<p className="data-note">הדירוג לפי אחוז ניצחונות, ובשוויון לפי הפרש נקודות. {played} משחקים שוחקו עד כה. מקור: אתר איגוד הכדורסל (ibasketball.co.il), עודכן {d}/{m}/{y}.</p></section></main></>;
+}
