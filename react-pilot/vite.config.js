@@ -9,13 +9,13 @@ export default defineConfig({
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const name = req.url?.split('?')[0].split('/').pop();
-        if (!['games.json', 'fixtures.json', 'league.json'].includes(name)) return next();
+        if (!['games.json', 'fixtures.json', 'league.json', 'swish.json'].includes(name)) return next();
         res.setHeader('Content-Type', 'application/json');
         res.end(readFileSync(resolve('..', name)));
       });
     },
     closeBundle() {
-      for (const name of ['games.json', 'fixtures.json', 'league.json']) copyFileSync(resolve('..', name), resolve('dist', name));
+      for (const name of ['games.json', 'fixtures.json', 'league.json', 'swish.json']) copyFileSync(resolve('..', name), resolve('dist', name));
     },
   }],
   publicDir: false,
