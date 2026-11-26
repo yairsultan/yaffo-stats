@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useLayoutEffect, useRef } from 'react';
 import { Link, Outlet, useLocation, useNavigationType } from 'react-router-dom';
 import { production, trackNavigation } from './analytics.js';
-import { TABS, round1, createNavigationTracker } from './pilot-data.js';
+import { TABS, round1, createNavigationTracker, balanceTone } from './pilot-data.js';
 export const Data = createContext(null);
 export const useData = () => useContext(Data);
 const savedScroll = new Map();
@@ -40,7 +40,7 @@ function NavigationEffects() {
     window.addEventListener('scroll', onScroll, { passive: true });
     const id = gamePart(location.pathname), game = games.find(g => g.id === id);
     const last = location.pathname.split('/').filter(Boolean).at(-1);
-    const tab = game ? TABS.find(([key]) => key === last)?.[1] : ({ games: 'משחקים', players: 'שחקני העונה', team: 'קבוצה' }[last]);
+    const tab = game ? TABS.find(([key]) => key === last)?.[1] : ({ games: 'משחקים', players: 'שחקני העונה', team: 'קבוצה', league: 'מצב הליגה' }[last]);
     if (tab && (!id || game)) { document.title = `${tab}${game ? ` · מול ${game.opponent.n} · ${game.d}` : ' · הפועל יפו צעירים'}${production ? '' : ' · פיילוט'}`; recordNavigation({ game, tab }); }
     return () => window.removeEventListener('scroll', onScroll);
   }, [location, type, games]);
@@ -49,7 +49,7 @@ function NavigationEffects() {
 }
 export function AppShell() {
   const location = useLocation();
-  return <><NavigationEffects />{!production && <div className="pilot-note">פיילוט לבדיקה · React וניווט חדש · ללא שליחת נתוני מדידה</div>}<div id="route-body"><Outlet /></div><HowCalculated /><nav className="nav" aria-label="ניווט העונה">{[['games', '📅', 'משחקים'], ['players', '👥', 'שחקני העונה'], ['team', '📊', 'קבוצה']].map(([path, icon, label]) => <ScreenLink key={path} to={`/${path}`} aria-current={location.pathname.startsWith(`/${path}`) ? 'page' : undefined}><span aria-hidden="true">{icon}</span>{label}</ScreenLink>)}</nav></>;
+  return <><NavigationEffects />{!production && <div className="pilot-note">פיילוט לבדיקה · React וניווט חדש · ללא שליחת נתוני מדידה</div>}<div id="route-body"><Outlet /></div><HowCalculated /><nav className="nav" aria-label="ניווט העונה">{[['games', '📅', 'משחקים'], ['players', '👥', 'שחקני העונה'], ['team', '📊', 'קבוצה'], ['league', '🏆', 'ליגה']].map(([path, icon, label]) => <ScreenLink key={path} to={`/${path}`} aria-current={location.pathname.startsWith(`/${path}`) ? 'page' : undefined}><span aria-hidden="true">{icon}</span>{label}</ScreenLink>)}</nav></>;
 }
 export function Comparison({ label, a, b, teamA, teamB, displayA, displayB, low = false }) {
   const total = a + b || 1, winner = a === b ? 0 : (a > b) !== low ? 1 : 2;
@@ -57,3 +57,15 @@ export function Comparison({ label, a, b, teamA, teamB, displayA, displayB, low 
 }
 export function HowCalculated() { return <details className="how"><summary>איך זה מחושב</summary>הנתונים נקראים מטופס סיום המשחק. סוג הסל (1, 2 או 3 נקודות) נגזר מהפרש הנקודות בין קליעות עוקבות. החטאות לא מתועדות בטופס, ולכן אין אחוזי קליעה מהשדה. מספר זריקות העונשין משוחזר מסימוני העבירות בטופס, ומוצג כחישוב מותנה כשהוא אינו נתון רשמי מלא. אין שעון בטופס: סוף כל רבע מדויק, והזמן בתוך הרבע משוער. מפת המגרש מראה סוג קליעה ולא מיקום. "משחקים" לשחקן = משחקים שבהם נרשם כמי שעלה לפרקט.</details>; }
 export function NotFound() { return <main className="card"><h1 id="screen-heading" tabIndex={-1}>המסך לא נמצא</h1><p>הקישור אינו מזהה משחק או מסך קיים.</p><ScreenLink to="/games">חזרה למשחקים</ScreenLink></main>; }
+
+// Win/loss balance: green with more wins, red with more losses, grey when level or no games. Text always shows the record, color is not the only signal.
+export function Balance({ row }) {
+  if (!row) return null;
+  const tone = balanceTone(row);
+  return <span className={`bal ${tone}`} dir="ltr" aria-label={`${row.w} ניצחונות, ${row.l} הפסדים`}>{row.w}-{row.l}</span>;
+}
+export function Form({ form, max = 5 }) {
+  const last = (form || []).slice(-max);
+  if (!last.length) return null;
+  return <span className="fm" dir="ltr" aria-label={`${last.filter(x => x === 'W').length} ניצחונות מתוך ${last.length} האחרונים`}>{last.map((x, i) => <i key={i} className={x}>{x === 'W' ? 'נ' : 'ה'}</i>)}</span>;
+}
