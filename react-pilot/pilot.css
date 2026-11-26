@@ -119,6 +119,13 @@ th button{border:0;background:transparent;color:inherit;font:inherit;padding:4px
 .fm{display:inline-flex;gap:3px;direction:ltr;unicode-bidi:isolate}.fm i{font-style:normal;width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:10px;font-weight:900;color:var(--badge-ink)}
 .fm .W{background:var(--win)}.fm .L{background:var(--loss)}
 .opp-bal{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 6px}.mini{font-size:12px;color:var(--mut)}
-.tr{display:grid;grid-template-columns:22px minmax(0,1fr) auto 50px;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.tr{display:grid;grid-template-columns:22px minmax(0,1fr) auto 50px 14px;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
 .tr:last-child{border-bottom:0}.tr .nm{font-weight:700;font-size:14px}.tr.us{background:color-mix(in srgb,var(--us) 22%,transparent);margin:0 -14px;padding:10px 14px;border-radius:10px}
 .gm.tech{grid-template-columns:62px minmax(0,1fr);cursor:default;padding-bottom:14px}.gm.tech .bdg{padding:10px 2px;font-size:12px}
+
+.tr .chev,.tg .chev{width:16px;height:16px;color:var(--mut)}
+.tr:active{background:var(--chip)}.tr:focus-visible,.tg.link:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.tg{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;min-height:44px;padding:10px 0;border-bottom:1px solid var(--line)}
+.tg:last-child{border-bottom:0}.tg.link{grid-template-columns:44px minmax(0,1fr) auto 16px}.tg.link:active{background:var(--chip)}
+.tg .bdg{padding:10px 0}.tg .t{font-weight:800;font-size:15px}.tg .s{font-size:12px;color:var(--mut);margin-top:4px}.tg .sc2{font-weight:900;font-size:18px;font-variant-numeric:tabular-nums}
+.hero .rec.tm{display:flex;justify-content:space-between;align-items:center;gap:12px}.hero .rec.tm .bal{font-size:18px;padding:4px 14px}
