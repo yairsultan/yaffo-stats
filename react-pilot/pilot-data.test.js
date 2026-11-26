@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { prepareGames, gameId, stats, seasonPlayers, quarterPoints, parseQuarter, createNavigationTracker, gameURL } from './pilot-data.js';
+import { prepareGames, gameId, stats, seasonPlayers, quarterPoints, parseQuarter, createNavigationTracker, gameURL, teamGames } from './pilot-data.js';
 const source = JSON.parse(readFileSync(new URL('../games.json', import.meta.url)));
 const games = prepareGames(source);
 test('source is immutable, all game identities stable across reordering', () => {
@@ -67,3 +67,14 @@ test('our scoresheet games match the league results; technical loss is flagged',
   assert(us.gp >= games.length + tech.length);
 });
 test('balance tone', () => { assert.equal(balanceTone({ gp: 3, w: 2, l: 1 }), 'pos'); assert.equal(balanceTone({ gp: 3, w: 1, l: 2 }), 'neg'); assert.equal(balanceTone({ gp: 2, w: 1, l: 1 }), 'even'); assert.equal(balanceTone({ gp: 0, w: 0, l: 0 }), 'even'); assert.equal(normTeam('מכבי שוהם-תל אביב ניצ'), normTeam('מכבי שהם/תל אביב ניצ')); });
+
+test('team games list matches the league table record', () => {
+  const league = JSON.parse(readFileSync(new URL('../league.json', import.meta.url)));
+  for (const row of leagueTable(league)) {
+    const list = teamGames(league, row.id);
+    assert.equal(list.length, row.gp);
+    assert.equal(list.filter(x => x.win).length, row.w);
+    assert.equal(list.reduce((n, x) => n + x.f, 0), row.pf);
+    assert(list.every((x, i) => i === 0 || `${list[i - 1].d}T${list[i - 1].t}` >= `${x.d}T${x.t}`));
+  }
+});
