@@ -20,8 +20,8 @@ export function Prep() {
   if (!row || row.us) return <NotFound />;
   const mine = teamProfile(league, swish, US_ID), them = teamProfile(league, swish, row.id), { weak, strong } = prepInsights(league, swish, row.id);
   return <><header className="hero"><div className="top">הכנה למשחק</div><h1 id="screen-heading" tabIndex={-1}>{row.name}</h1><div className="rec tm"><Balance row={row} /><Form form={row.form} /></div></header><main>
-    <Points kind="strong" title="נקודות חוזקה" rows={strong} /><Points kind="weak" title="נקודות חולשה" rows={weak} />
     {them ? <section className="card"><h2>ממוצע למשחק</h2><div className="team-labels"><b style={{ color: A.col }}>{US}</b><b style={{ color: B.col }}>{row.name}</b></div>{[['pts', 'נקודות קלעו'], ['ptsA', 'נקודות ספגו'], ['p3', 'שלשות'], ['p2', 'סלי 2'], ['ft', 'עונשין'], ['fouls', 'עבירות']].map(([k, label]) => mine ? <Comparison key={k} label={label} a={mine[k]} b={them[k]} teamA={A} teamB={B} low={k === 'ptsA' || k === 'fouls'} /> : null)}<div className="mini">{them.n} משחקים שלה · {mine?.n ?? 0} שלנו</div></section> : <section className="card"><p className="empty">עדיין אין נתוני משחק לקבוצה.</p></section>}
     
+    <Points kind="strong" title="נקודות חוזקה" rows={strong} /><Points kind="weak" title="נקודות חולשה" rows={weak} />
     <section className="card"><ScreenLink className="wbtn" to={`/league/${row.id}`}>כל משחקי הקבוצה</ScreenLink></section></main></>;
 }
