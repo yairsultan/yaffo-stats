@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
-import { US, average, round1, seasonPlayers, gameURL, teamByName, usTechLosses } from './pilot-data.js';
-import { useData, ScreenLink, Comparison, Balance, Form } from './pilot-ui.jsx';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { US, average, round1, seasonPlayers, gameURL, teamByName, usTechLosses, teamGames, leagueTable } from './pilot-data.js';
+import { useData, NotFound, ScreenLink, Comparison, Balance, Form } from './pilot-ui.jsx';
 function SeasonHeader({ title }) {
   const { games, league } = useData();
   const tech = usTechLosses(league);
@@ -64,5 +64,20 @@ export function SeasonTeam() {
 export function SeasonLeague() {
   const { table, league } = useData();
   if (!table.length) return <><SeasonHeader title="מצב הליגה" /><main className="card"><p className="empty">נתוני הליגה אינם זמינים כרגע.</p></main></>;
-  return <><SeasonHeader title="מצב הליגה" /><main><section className="card"><h2>טבלה ומאזן</h2>{table.map((r, i) => <div className={`tr${r.us ? ' us' : ''}`} key={r.id}><span className="no">{i + 1}</span><div><div className="nm">{r.name}{r.us && ' (אנחנו)'}</div><div className="sub">קלעה {round1(r.ppg)} · ספגה {round1(r.papg)}</div><div className="sub">{r.gp} משחקים · הפרש <span dir="ltr" style={{ whiteSpace: 'nowrap' }}>{r.diff > 0 ? '+' : ''}{r.diff}</span>{r.tech ? ' · כולל הפסד טכני' : ''}</div></div><Form form={r.form} /><Balance row={r} /></div>)}</section></main></>;
+  return <><SeasonHeader title="מצב הליגה" /><main><section className="card"><h2>טבלה ומאזן</h2>{table.map((r, i) => <ScreenLink className={`tr${r.us ? ' us' : ''}`} key={r.id} to={`/league/${r.id}`}><span className="no">{i + 1}</span><div><div className="nm">{r.name}{r.us && ' (אנחנו)'}</div><div className="sub">קלעה {round1(r.ppg)} · ספגה {round1(r.papg)}</div><div className="sub">{r.gp} משחקים · הפרש <span dir="ltr" style={{ whiteSpace: 'nowrap' }}>{r.diff > 0 ? '+' : ''}{r.diff}</span>{r.tech ? ' · כולל הפסד טכני' : ''}</div></div><Form form={r.form} /><Balance row={r} /><svg className="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" focusable="false"><path d="m14 6-6 6 6 6" /></svg></ScreenLink>)}</section></main></>;
+}
+export function LeagueTeam() {
+  const { table, league, games } = useData();
+  const { teamId } = useParams();
+  const row = table.find(r => String(r.id) === teamId);
+  if (!row) return <NotFound />;
+  const nameOf = id => league.teams.find(t => t.id === id)?.name;
+  const toISO = d => d.split('/').reverse().join('-');
+  const list = teamGames(league, row.id);
+  return <><header className="hero"><div className="top">ליגה ב׳ · עונת 2026/27</div><h1 id="screen-heading" tabIndex={-1}>{row.name}</h1><div className="rec tm"><Balance row={row} /><Form form={row.form} /></div></header><main><section className="card">{list.map(g => {
+    const [y, m, d] = g.d.split('-');
+    const ours = row.us ? games.find(x => toISO(x.d) === g.d) : null;
+    const body = <><div className={`bdg ${g.win ? 'W' : 'L'}`} dir="ltr" aria-label={g.win ? 'ניצחון' : 'הפסד'}>{g.win ? 'W' : 'L'}</div><div><div className="t">{nameOf(g.oppId)} <span className="pill ha">{g.home ? 'בית' : 'חוץ'}</span></div><div className="s">{d}/{m}/{y}{g.tech ? ' · טכני' : ''}</div></div><div className="sc2" dir="ltr">{g.f}–{g.a}</div>{ours && <svg className="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" focusable="false"><path d="m14 6-6 6 6 6" /></svg>}</>;
+    return ours ? <ScreenLink className="tg link" key={`${g.d}-${g.oppId}`} to={gameURL(ours)}>{body}</ScreenLink> : <div className="tg" key={`${g.d}-${g.oppId}`}>{body}</div>;
+  })}{!list.length && <p className="empty">עדיין אין משחקים.</p>}</section></main></>;
 }
