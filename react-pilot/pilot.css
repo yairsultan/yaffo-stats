@@ -251,3 +251,7 @@ h2{font-size:16px;font-weight:800;line-height:1.3;margin:0 0 8px}
 .game-nav{gap:6px}.game-nav a,.game-nav button{min-width:0;padding:10px 4px;white-space:nowrap;font-size:13px}
 @media (max-width:360px){.fxr .fv{display:none}.game-nav a,.game-nav button{font-size:12px;padding:10px 2px}.fxr{grid-template-columns:40px minmax(0,1fr) 48px 38px;column-gap:8px}}
 @media (max-width:360px){.game-nav{padding-inline:10px;gap:4px}.game-nav a,.game-nav button{flex:1 1 0;min-width:0!important;font-size:11.5px;padding:10px 1px;overflow:hidden}}
+/* Team page game rows: result badge fills its own column and never covers the name */
+.tg .bdg{width:100%;min-width:0;box-sizing:border-box;height:32px;font-size:13px}
+.tg>*{min-width:0}
+.tg .tm-main{overflow:hidden}
