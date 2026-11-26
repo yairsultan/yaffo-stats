@@ -101,3 +101,11 @@ export const teamByName = (table, name) => table.find(r => normTeam(r.name) === 
 // Tone of a record: green with more wins, red with more losses, neutral when level or no games yet.
 export const balanceTone = row => !row || !row.gp || row.w === row.l ? 'even' : row.w > row.l ? 'pos' : 'neg';
 export const usTechLosses = league => (league?.games || []).filter(g => g.tech && (g.h === US_ID || g.a === US_ID)).map(g => ({ ...g, win: (g.h === US_ID ? g.hs > g.as : g.as > g.hs) }));
+
+// All played league games of one team, newest first, from that team's point of view.
+export function teamGames(league, id) {
+  return (league?.games || []).filter(g => g.hs !== undefined && g.as !== undefined && (g.h === id || g.a === id)).map(g => {
+    const home = g.h === id, f = home ? g.hs : g.as, a = home ? g.as : g.hs;
+    return { d: g.d, t: g.t, home, oppId: home ? g.a : g.h, f, a, win: f > a, tech: !!g.tech };
+  }).sort((x, y) => `${y.d}T${y.t}`.localeCompare(`${x.d}T${x.t}`));
+}
