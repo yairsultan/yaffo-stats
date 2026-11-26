@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { prepareGames, leagueTable } from './pilot-data.js';
 import { Data, AppShell, NotFound } from './pilot-ui.jsx';
-import { SeasonGames, SeasonPlayers, SeasonTeam, SeasonLeague } from './pilot-season.jsx';
+import { SeasonGames, SeasonPlayers, SeasonTeam, SeasonLeague, LeagueTeam } from './pilot-season.jsx';
 import { GameLayout, Overview, GamePlayers, GameFlow, GameCourt } from './pilot-game.jsx';
 import './pilot.css';
 import { installAnalytics } from './analytics.js';
@@ -17,6 +17,6 @@ function Application() {
  if (name === 'league.json' && error.name !== 'AbortError') return null; throw error; } })).then(([games, fixtures, league]) => setData({ games: prepareGames(games), fixtures, league, table: leagueTable(league) })).catch(error => { if (error.name !== 'AbortError') setFailed(true); }); return () => abort.abort(); }, [attempt]);
   if (failed) return <main className="card"><h1>לא ניתן לטעון את הנתונים</h1><button className="chip" onClick={() => retry(n => n + 1)}>נסו שוב</button></main>;
   if (!data) return <main className="card" role="status">טוען נתוני משחקים…</main>;
-  return <Data.Provider value={data}><HashRouter><Routes><Route element={<AppShell />}><Route index element={<Navigate to="/games" replace />} /><Route path="games" element={<SeasonGames />} /><Route path="full" element={<Navigate to="/games?schedule=full" replace />} /><Route path="players" element={<SeasonPlayers />} /><Route path="team" element={<SeasonTeam />} /><Route path="league" element={<SeasonLeague />} /><Route path="games/:gameId" element={<GameLayout />}><Route index element={<GameIndex />} /><Route path="overview" element={<Overview />} /><Route path="players" element={<GamePlayers />} /><Route path="flow" element={<GameFlow />} /><Route path="court" element={<GameCourt />} /><Route path="*" element={<NotFound />} /></Route><Route path="*" element={<NotFound />} /></Route></Routes></HashRouter></Data.Provider>;
+  return <Data.Provider value={data}><HashRouter><Routes><Route element={<AppShell />}><Route index element={<Navigate to="/games" replace />} /><Route path="games" element={<SeasonGames />} /><Route path="full" element={<Navigate to="/games?schedule=full" replace />} /><Route path="players" element={<SeasonPlayers />} /><Route path="team" element={<SeasonTeam />} /><Route path="league" element={<SeasonLeague />} /><Route path="league/:teamId" element={<LeagueTeam />} /><Route path="games/:gameId" element={<GameLayout />}><Route index element={<GameIndex />} /><Route path="overview" element={<Overview />} /><Route path="players" element={<GamePlayers />} /><Route path="flow" element={<GameFlow />} /><Route path="court" element={<GameCourt />} /><Route path="*" element={<NotFound />} /></Route><Route path="*" element={<NotFound />} /></Route></Routes></HashRouter></Data.Provider>;
 }
 createRoot(document.getElementById('root')).render(<React.StrictMode><Application /></React.StrictMode>);
