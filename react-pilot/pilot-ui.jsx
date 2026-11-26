@@ -49,13 +49,12 @@ function NavigationEffects() {
 }
 export function AppShell() {
   const location = useLocation();
-  return <><NavigationEffects />{!production && <div className="pilot-note">פיילוט לבדיקה · React וניווט חדש · ללא שליחת נתוני מדידה</div>}<div id="route-body"><Outlet /></div><HowCalculated /><nav className="nav" aria-label="ניווט העונה">{[['games', '📅', 'משחקים'], ['players', '👥', 'שחקני העונה'], ['team', '📊', 'קבוצה'], ['league', '🏆', 'ליגה']].map(([path, icon, label]) => <ScreenLink key={path} to={`/${path}`} aria-current={location.pathname.startsWith(`/${path}`) ? 'page' : undefined}><span aria-hidden="true">{icon}</span>{label}</ScreenLink>)}</nav></>;
+  return <><NavigationEffects />{!production && <div className="pilot-note">פיילוט לבדיקה · React וניווט חדש · ללא שליחת נתוני מדידה</div>}<div id="route-body"><Outlet /></div><nav className="nav" aria-label="ניווט העונה">{[['games', '📅', 'משחקים'], ['players', '👥', 'שחקני העונה'], ['team', '📊', 'קבוצה'], ['league', '🏆', 'ליגה']].map(([path, icon, label]) => <ScreenLink key={path} to={`/${path}`} aria-current={location.pathname.startsWith(`/${path}`) ? 'page' : undefined}><span aria-hidden="true">{icon}</span>{label}</ScreenLink>)}</nav></>;
 }
 export function Comparison({ label, a, b, teamA, teamB, displayA, displayB, low = false }) {
   const total = a + b || 1, winner = a === b ? 0 : (a > b) !== low ? 1 : 2;
   return <div className="cmp"><div className="l" style={{ color: winner === 1 ? teamA.col : 'var(--mut)', fontWeight: winner === 1 ? 900 : undefined, fontSize: winner === 1 ? 19 : undefined }}>{displayA ?? round1(a)}</div><div><div className="c">{label}</div><div className="bar"><span style={{ width: `${a / total * 100}%`, background: teamA.hex }} /><span style={{ width: `${b / total * 100}%`, background: teamB.hex }} /></div></div><div className="l" style={{ color: winner === 2 ? teamB.col : 'var(--mut)', fontWeight: winner === 2 ? 900 : undefined, fontSize: winner === 2 ? 19 : undefined }}>{displayB ?? round1(b)}</div></div>;
 }
-export function HowCalculated() { return <details className="how"><summary>איך זה מחושב</summary>הנתונים נקראים מטופס סיום המשחק. סוג הסל (1, 2 או 3 נקודות) נגזר מהפרש הנקודות בין קליעות עוקבות. החטאות לא מתועדות בטופס, ולכן אין אחוזי קליעה מהשדה. מספר זריקות העונשין משוחזר מסימוני העבירות בטופס, ומוצג כחישוב מותנה כשהוא אינו נתון רשמי מלא. אין שעון בטופס: סוף כל רבע מדויק, והזמן בתוך הרבע משוער. מפת המגרש מראה סוג קליעה ולא מיקום. "משחקים" לשחקן = משחקים שבהם נרשם כמי שעלה לפרקט.</details>; }
 export function NotFound() { return <main className="card"><h1 id="screen-heading" tabIndex={-1}>המסך לא נמצא</h1><p>הקישור אינו מזהה משחק או מסך קיים.</p><ScreenLink to="/games">חזרה למשחקים</ScreenLink></main>; }
 
 // Win/loss balance: green with more wins, red with more losses, grey when level or no games. Text always shows the record, color is not the only signal.
