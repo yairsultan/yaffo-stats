@@ -67,5 +67,5 @@ export function Balance({ row }) {
 export function Form({ form, max = 5 }) {
   const last = (form || []).slice(-max);
   if (!last.length) return null;
-  return <span className="fm" dir="ltr" aria-label={`${last.filter(x => x === 'W').length} ניצחונות מתוך ${last.length} האחרונים`}>{last.map((x, i) => <i key={i} className={x}>{x === 'W' ? 'נ' : 'ה'}</i>)}</span>;
+  return <span className="fm" dir="ltr" aria-label={`${last.filter(x => x === 'W').length} ניצחונות מתוך ${last.length} האחרונים`}>{last.map((x, i) => <i key={i} className={x}>{x}</i>)}</span>;
 }
